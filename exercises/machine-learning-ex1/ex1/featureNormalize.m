@@ -27,9 +27,16 @@ sigma = zeros(1, size(X, 2));
 %       
 
 
+mu = mean(X)
+sigma = std(X)
 
+n = size(X,2)
+for featureIndex = 1:n
 
+  currentFeature = X(:,featureIndex);
+  X_norm(:, featureIndex) = (currentFeature - mu(featureIndex)) / sigma(featureIndex)
 
+end
 
 
 
