@@ -18,8 +18,13 @@ for iter = 1:num_iters
     %
 
 
-
-
+    Hx = X * theta;
+    Diff = Hx - y;
+        
+    prefix = alpha * 1/m;
+    delta =  ( X' * Diff );
+    
+    theta = theta - prefix * delta
 
 
 
