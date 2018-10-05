@@ -21,14 +21,13 @@ h = sigmoid(X * theta)
 
 % We want the regularization to exclude the bias feature, so we can set theta(1) to zero
 % or change the whole vector theta1 = [0 ; theta(2:size(theta), :)];
+
+[defaultCost, defaultGrad] = costFunction(theta, X,y)
 theta(1) = 0;
 
-defaultCost = 1/m * ( -y' * log(h)  - (1 - y)' * log(1 - h ) )
 penalty = sum((lambda / (2*m)) * (theta.^2))
 
 J = defaultCost + penalty
-
-defaultGrad = 1/ m * X' * ( h - y )
 grad = defaultGrad + lambda * theta /m;
 
 
