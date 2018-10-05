@@ -17,11 +17,22 @@ grad = zeros(size(theta));
 %               Compute the partial derivatives and set grad to the partial
 %               derivatives of the cost w.r.t. each parameter in theta
 
+h = sigmoid(X * theta)
 
+% We want the regularization to exclude the bias feature, so we can set theta(1) to zero
+% or change the whole vector theta1 = [0 ; theta(2:size(theta), :)];
+theta(1) = 0;
 
+defaultCost = 1/m * ( -y' * log(h)  - (1 - y)' * log(1 - h ) )
+penalty = sum((lambda / (2*m)) * (theta.^2))
 
+J = defaultCost + penalty
+
+defaultGrad = 1/ m * X' * ( h - y )
+grad = defaultGrad + lambda * theta /m;
 
 
 % =============================================================
 
 end
+s
