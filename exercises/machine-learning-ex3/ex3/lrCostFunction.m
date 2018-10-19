@@ -38,7 +38,13 @@ grad = zeros(size(theta));
 
 
 
+[defaultCost, defaultGrad] = costFunction(theta, X,y)
+theta(1) = 0;
 
+penalty = sum((lambda / (2*m)) * (theta.^2))
+
+J = defaultCost + penalty
+grad = defaultGrad + lambda * theta /m;
 
 
 
