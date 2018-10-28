@@ -48,8 +48,8 @@ Theta2_grad = zeros(size(Theta2));
 % and K is the total number of possible layers.
 
 
-
-% Now, implement forward propagation, similar to ex3 - predict:
+% 1.3 Forward propagation and cost function (unregularized)
+% forward propagation, similar to ex3 - predict:
 
 a1 = [ones(m,1) X];
 
@@ -72,6 +72,23 @@ Y_k  = (tmp(y,:));
 % and weights them over the number of samples
 J = -(sum(sum((Y_k .* log(a3) + (1 - Y_k) .* log(1 - a3)), 2)))/m;
 
+
+
+% 1.3 Forward propagation and cost function (with regularization)
+% For this we can steal some of the logic from ex2 costFunctionReg.m
+
+% First, we toss the first columns of each Theta(i) matrix.
+
+Theta1Reg = Theta1(:,2:size(Theta1,2));
+Theta2Reg = Theta2(:,2:size(Theta2,2));
+
+% Now implement the regularization formula described on page 6 of ex4.
+
+Reg = (lambda/(2*m)) * (sum(sum( Theta1Reg.^2 )) + sum( sum( Theta2Reg.^2 ) ));
+
+% Now just add the regularization term to the previously calculated J
+
+J = J + Reg;
 
 
 % Part 2: Implement the backpropagation algorithm to compute the gradients
