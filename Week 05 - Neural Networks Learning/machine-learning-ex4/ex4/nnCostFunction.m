@@ -159,8 +159,8 @@ endfor;
 % removed/commented out.
 
 
- Theta2_grad = Theta2_grad ./ m;
- Theta1_grad = Theta1_grad ./ m;
+% Theta2_grad = Theta2_grad ./ m;
+% Theta1_grad = Theta1_grad ./ m;
 
 % Part 3: Implement regularization with the cost function and gradients.
 %
@@ -171,20 +171,13 @@ endfor;
 %
 
 
+% Implement for Theta1 and Theta2 when l = 0
+Theta1_grad(:,1) = Theta1_grad(:,1)./m;
+Theta2_grad(:,1) = Theta2_grad(:,1)./m;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+% Implement for Theta1 and Theta 2 when l > 0
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end)./m + ( (lambda/m) * Theta1(:,2:end) );
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end)./m + ( (lambda/m) * Theta2(:,2:end) );
 
 
 
