@@ -106,6 +106,62 @@ J = J + Reg;
 %               over the training examples if you are implementing it for the 
 %               first time.
 %
+
+X = [ones(m,1) X]; # used later again, so init here
+
+% Note that this time we do not transpose a3 to create h as to make
+% the following matrix multiplication slightly simpler
+
+% Now we tranform the y result vector into a matrix where 1s in the
+% columns map to the corresponding values of y
+
+yMatrix = zeros(num_labels, m);
+
+for i=1:num_labels,
+    yMatrix(i,:) = (y==i);
+endfor
+
+
+for k = 1:m,
+    % Step 1: Set Values and feed forward to layers 2,3
+    x_t = X(k,:);
+    y_t = Y_k(k, :);
+    
+    % Forward propagation for (x_t, y_t)
+    a1 = x_t;
+    z2 = Theta1 * a1';
+
+    a2 = sigmoid(z2);
+    a2 = [1 ; a2];     % add bias to vector a2
+
+    % Now we have our final activation layer a3 == h(theta)
+    z3 = Theta2 * a2;
+    a3 = sigmoid(z3);
+
+    % Step 2: compute output error
+    sigma3 = a3 - yMatrix(:,k);
+         
+    % Step 3: compute hidden layer error
+    % Re-add a bais node for z2
+    z2 = [1 ; z2];
+    sigma2 = (Theta2' * sigma3) .* sigmoidGradient(z2);
+    % Strip out bais node from resulting sigma2
+    sigma2 = sigma2(2:end);
+
+    Theta2_grad = (Theta2_grad + sigma3 * a2');
+    Theta1_grad = (Theta1_grad + sigma2 * a1);
+
+endfor;
+
+% Step 5: Divide accumulated gradients by 1/m
+% Now divide everything (element-wise) by m to return the partial
+% derivatives. Note that for regularization these will have to
+% removed/commented out.
+
+
+ Theta2_grad = Theta2_grad ./ m;
+ Theta1_grad = Theta1_grad ./ m;
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
