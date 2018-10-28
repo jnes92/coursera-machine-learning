@@ -39,6 +39,41 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 %
+
+
+% J(theta) = 1/m * sigma(i=1 to m) of sigma(k=1 to K) of [
+%                     -y(i)k * log((h(theta)(x(i))k) -
+%                    (1y(i)k) * log(1 - (h(theta)(x(i))k))]
+% where h(theta(x(i))k) is the result of the NN forward prop
+% and K is the total number of possible layers.
+
+
+
+% Now, implement forward propagation, similar to ex3 - predict:
+
+a1 = [ones(m,1) X];
+
+z2 = a1 * Theta1';
+a2 = [ones(size(z2), 1) sigmoid(z2)];
+
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
+
+h = a3;
+
+% Matrix of all classes -> (m x num_labels)
+tmp = eye(num_labels);
+Y_k  = (tmp(y,:));
+
+% compute the cost
+% INNER sum ouput cost per each y_k_i and h_theta_k(i) ie. per each sample
+% on a separate line
+% OUTER sum calculates weighted cost across all examples i.e. sums all samples
+% and weights them over the number of samples
+J = -(sum(sum((Y_k .* log(a3) + (1 - Y_k) .* log(1 - a3)), 2)))/m;
+
+
+
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
 %         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
