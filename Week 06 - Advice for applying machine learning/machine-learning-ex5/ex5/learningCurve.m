@@ -28,17 +28,8 @@ error_val   = zeros(m, 1);
 %               error_val(i) should give you the errors
 %               obtained after training on i examples.
 %
-% Note: You should evaluate the training error on the first i training
-%       examples (i.e., X(1:i, :) and y(1:i)).
-%
-%       For the cross-validation error, you should instead evaluate on
-%       the _entire_ cross validation set (Xval and yval).
-%
-% Note: If you are using your cost function (linearRegCostFunction)
-%       to compute the training and cross validation error, you should 
-%       call the function with the lambda argument set to 0. 
-%       Do note that you will still need to use lambda when running
-%       the training to obtain the theta parameters.
+
+
 %
 % Hint: You can loop over the examples with the following:
 %
@@ -53,7 +44,25 @@ error_val   = zeros(m, 1);
 
 % ---------------------- Sample Solution ----------------------
 
+for i = 1 : m
+  % Note: You should evaluate the training error on the first i training
+  %       examples (i.e., X(1:i, :) and y(1:i)).
+  %
+  X_train = X(1:i, :);
+  y_train = y(1:i);
+  theta = trainLinearReg(X_train, y_train, lambda);
 
+  % Note: If you are using your cost function (linearRegCostFunction)
+  %       to compute the training and cross validation error, you should 
+  %       call the function with the lambda argument set to 0. 
+  %       Do note that you will still need to use lambda when running
+  %       the training to obtain the theta parameters.
+  error_train(i) = linearRegCostFunction(X_train, y_train, theta, 0 );
+  
+  %       For the cross-validation error, you should instead evaluate on
+  %       the _entire_ cross validation set (Xval and yval).
+  error_val(i) = linearRegCostFunction(Xval, yval, theta, 0);
+end 
 
 
 
