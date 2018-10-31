@@ -22,12 +22,10 @@ h = X * theta;
 reg = lambda / (2 * m) * sum( theta(2:end) .^ 2);
 J = 1 / (2*m) * ( sum((h - y) .^ 2) ) .+ reg;
 
-
-
-
-
-
-
+gradInnerTerm = (1/m) * ( X' * (h - y) );
+thetaCloned = theta;
+thetaCloned(1) =  0; % skips regularized of first index
+grad = gradInnerTerm + lambda/m * thetaCloned;
 
 
 
