@@ -15,8 +15,10 @@ sim = 0;
 %               sigma
 %
 %
-
-
+% Sum should be  = sum( (1-0)^2 + (2-4)^2 + (1 - (-1))^2 ) = sum(1+4+4) = 9 
+sumOfDistancesSquared = sum((x1-x2) .^ 2); 
+innerTerm = - sumOfDistancesSquared / (2 * sigma' * sigma); % for sigma = 2: -9 / (2*4) = -1.125
+sim = exp ( innerTerm );
 
 
 
