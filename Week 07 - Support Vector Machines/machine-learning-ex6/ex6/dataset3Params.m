@@ -21,28 +21,35 @@ minerror = 10^6
 Csel = C;
 sigmaSel = sigma;
 
-for i = 1:size(testRange, 2)
-  for j = 1:size(testRange,2)
-    C = testRange(i); sigma = testRange(j);
-    model= svmTrain(X, y, C, @(x1, x2) gaussianKernel(x1, x2, sigma));
+trainingWanted = false
+if (trainingWanted)
+  for i = 1:size(testRange, 2)
+    for j = 1:size(testRange,2)
+      C = testRange(i); sigma = testRange(j);
+      model= svmTrain(X, y, C, @(x1, x2) gaussianKernel(x1, x2, sigma));
 
-    % You can use svmPredict to predict the labels on the cross
-    % validation set. For example, 
-    %   predictions = svmPredict(model, Xval);
-    % will return the predictions on the cross validation set.
-    predictions = svmPredict(model, Xval);
-    
-    %  Note: You can compute the prediction error using 
-    error = mean(double(predictions ~= yval))
-    
-    if error < minerror,
-      Csel = C;
-      sigmaSel = sigma;
-      minerror = error;
+      % You can use svmPredict to predict the labels on the cross
+      % validation set. For example, 
+      %   predictions = svmPredict(model, Xval);
+      % will return the predictions on the cross validation set.
+      predictions = svmPredict(model, Xval);
+      
+      %  Note: You can compute the prediction error using 
+      error = mean(double(predictions ~= yval))
+      
+      if error < minerror,
+        Csel = C;
+        sigmaSel = sigma;
+        minerror = error;
+      end
+      
     end
-    
-  end
-end  
+  end  
+  
+  else
+  Csel = 1
+  sigmaSel = 0.1 
+endif
 
 C = Csel
 sigma = sigmaSel
