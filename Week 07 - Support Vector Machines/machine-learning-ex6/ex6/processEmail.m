@@ -98,11 +98,17 @@ while ~isempty(email_contents)
     %
 
 
+    for i = 1:size(vocabList)
+      %str
+      %vocabList{i}
+      wordMatchingWithVocabList = strcmp(vocabList{i}, str);
+      if ( wordMatchingWithVocabList )
+          word_indices = [word_indices; i];
+      endif
 
 
 
-
-
+    end
 
 
 
