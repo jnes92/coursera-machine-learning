@@ -21,10 +21,25 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
+m = size(X,1);
 
+for i = 1:m
+ currentX = X(i, :);
+ min_distance = 10^10;
+ 
 
+  for k = 1:K
+    currentError = currentX - centroids(k, : );
+    currentDistance = sum(currentError.^2);
 
-
+    if currentDistance < min_distance
+      min_distance = currentDistance;
+      idx(i) = k;
+     end
+      
+  end
+  
+end
 
 
 % =============================================================
