@@ -20,7 +20,8 @@ S = zeros(n);
 %       number of examples).
 %
 
-
+Sigma = (X' * X ) / m; % covariance
+[U,S,V] = svd(Sigma);
 
 
 
