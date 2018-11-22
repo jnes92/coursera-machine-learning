@@ -47,9 +47,10 @@ J = sum((diff.^2)(R==1))/2;
 X_grad = (diff.*R)*Theta;                 %unregularized vectorized implementation
 Theta_grad = ((diff.*R)'*X);              %unregularized vectorized implementation
 
+JRegTheta = 1/2 * lambda * sum(sum(Theta.^2));
+JRegX = 1/2 * lambda * sum(sum(X.^2));
 
-
-
+J = J + JRegTheta + JRegX;
 
 
 
