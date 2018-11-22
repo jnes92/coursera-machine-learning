@@ -44,7 +44,8 @@ Theta_grad = zeros(size(Theta));
 diff = (X*Theta'-Y);
 J = sum((diff.^2)(R==1))/2;
 
-
+X_grad = (diff.*R)*Theta;                 %unregularized vectorized implementation
+Theta_grad = ((diff.*R)'*X);              %unregularized vectorized implementation
 
 
 
