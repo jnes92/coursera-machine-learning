@@ -8,6 +8,12 @@
 - 1h getting started 
 - 2h video material
 - 1h 30m ResNet 50, Deploy & Export files
+- 1h Lesson 1 with own data: 
+  - Aikido 
+  - BJJ 
+  - Kickboxen  
+  - Krav Mage
+  - Wing Chun
 
 
 ### Getting started
@@ -84,13 +90,13 @@ Ready to go !
 ### Todo Lesson 1
 [x] run the notebook
 [x] test with resnet50 -> gpu memeroy - batch size decrease
-[ ] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
+[x] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
 
 [x] checkout cnn link http://cs231n.github.io/convolutional-networks/
 [ ] spunk and tensorflow for security blogpost
 [ ] checkout the forum and get involved?
-[ ] Do export/hosting tutorial for cat breeds
-[ ] export/ host with own dataset
+[ ] Do export/ hosting tutorial for cat breeds
+[ ] Do export/ host with own dataset
 
 
 ### Reminder:
