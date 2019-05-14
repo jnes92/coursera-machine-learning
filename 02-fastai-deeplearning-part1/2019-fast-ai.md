@@ -4,7 +4,7 @@
 - 7 week course 
 - Samstag 11.05. - Samstag 29. Juni
 
-## Lesson 1: Samstag 11.5.19 (17 Uhr - )
+## Lesson 1: Samstag 11.5.19 (17 Uhr - 20 Uhr)
 - 1h getting started 
 - 2h video material
 
@@ -18,8 +18,7 @@ To get started you need:
 -> more reading here: 
 https://www.fast.ai/2017/11/16/what-you-need/
 
-#### What you need to do deep learning:
--> [./lesson1/01-what-you-need.md]
+- [Notes: What you need to do deep learning](./lesson1/01-what-you-need.md)
 
 #### Learning Python
 
@@ -75,9 +74,11 @@ base_dir = root_dir + 'fastai-v3/'
 
 Ready to go !
 
-### Video Notes 
+### Links
 
--> [./lesson1/02-video-image-classifier.md]
+- [Video Notizen](./lesson1/02-video-image-classifier.md)
+- [Convolutional Neural Networks (CNNs / ConvNets)](lesson1/03-more.md)
+
 
 ### Todo Lesson 1
 [x] run the notebook
@@ -85,8 +86,9 @@ Ready to go !
 [ ] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
 [ ] spunk and tensorflow for security blogpost
 
-[ ] checkout cnn link http://cs231n.github.io/convolutional-networks/
+[x] checkout cnn link http://cs231n.github.io/convolutional-networks/
 [ ] checkout the forum and get involved?
+[ ] Do render tutorial for cat breeds, own dataset
 
 
 ### Reminder:
