@@ -85,11 +85,12 @@ Ready to go !
 [x] run the notebook
 [x] test with resnet50 -> gpu memeroy - batch size decrease
 [ ] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
-[ ] spunk and tensorflow for security blogpost
 
 [x] checkout cnn link http://cs231n.github.io/convolutional-networks/
+[ ] spunk and tensorflow for security blogpost
 [ ] checkout the forum and get involved?
-[ ] Do render tutorial for cat breeds, own dataset
+[ ] Do export/hosting tutorial for cat breeds
+[ ] export/ host with own dataset
 
 
 ### Reminder:
@@ -99,3 +100,6 @@ https://pytorch.org/tutorials/beginner/nn_tutorial.html
 - test easy things in tensor flow 2.0 ? getting started?
 - poem generator 
 - GAN IMAGE Art
+- Reinforcement learning test: NEAT
+- Reinforcement learning test: [openAI Gym](https://gym.openai.com/docs/)
+    - maybe test with toy_text: BlackJack
