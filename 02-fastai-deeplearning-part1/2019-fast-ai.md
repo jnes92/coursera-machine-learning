@@ -7,6 +7,7 @@
 ## Lesson 1: Samstag 11.5.19 (17 Uhr - 20 Uhr)
 - 1h getting started 
 - 2h video material
+- 1h 30m ResNet 50, Deploy & Export files
 
 
 ### Getting started
@@ -82,7 +83,7 @@ Ready to go !
 
 ### Todo Lesson 1
 [x] run the notebook
-[ ] test with resnet50 -> gpu memeroy - batch size decrease
+[x] test with resnet50 -> gpu memeroy - batch size decrease
 [ ] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
 [ ] spunk and tensorflow for security blogpost
 
