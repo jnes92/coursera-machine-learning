@@ -40,3 +40,49 @@ Layers used to build ConvNets
     - Fully-Connected Layer (like rnn)
 - stack these layers to form a cnn architecture
 - Example for CIFAR-10: [INPUT - CONV - RELU - Pool - FC]
+
+
+# Splunk and Tensorflow for Security: 
+## Catching the Fraudster with Behavior Biometrics
+
+[Link to article](https://www.splunk.com/blog/2017/04/18/deep-learning-with-splunk-and-tensorflow-for-security-catching-the-fraudster-in-neural-networks-with-behavioral-biometrics.html)
+
+- steady growth of cyberattacks
+- primaray ways of fraud: user account takeover, credentials theft, online payment takeover 
+- common detections like geo location / ip adress are known for attackers
+- identifying malicious actors is becoming more challenging
+
+- humans use computer systems in a unique way 
+- mouse and other input is person´s system
+- those habits and behaviors are difficult to change
+- identify useres by typical patterns -> detect anomalies
+
+- can we recongnize the user by input devices ? 
+- field is called "behavioral biometrics"
+- common algorithm will just learn on a subset of data 
+- splunk has a software to detect each mouse movement with timestamp and x,y coordinates
+- some mouse interaction may contain 5-10k events per user per page
+
+
+- all those datapoints get converted into an image path
+- 1 image can represent thousands of data points
+- used inside a cnn with TensorFlow + Keras 
+- Keras allows image recognition architecture in 50 - 100 lines of python
+- gpu can speed up 10-100x of cpu calculation
+- using real usage data from real web visitors from financial information service
+- a scheduled python script generates images from mouse activity encoded
+
+### Group classification
+
+- first task was to seperate between: regular customers and new visitors for financial sites
+- VGG 16 architecture for image recognition
+- VGG 16 is optimized for non-natural images
+- first result with 2800 images -> 81% accuracy
+
+### Individual user classification
+
+- second task: recognize indiidual user
+- serveral extra difficulties for realistic scenario
+  - small dataset: 360+180 
+  - dataset was created with other people trying to achieve similiar activity
+- also got 78% accuarcy

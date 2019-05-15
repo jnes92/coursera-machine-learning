@@ -85,6 +85,7 @@ Ready to go !
 
 - [Video Notizen](./lesson1/02-video-image-classifier.md)
 - [Convolutional Neural Networks (CNNs / ConvNets)](lesson1/03-more.md)
+- [Splunk and Tensorflow for Fraud Detection](lesson1/03-more.md)
 
 
 ### Todo Lesson 1
@@ -93,7 +94,7 @@ Ready to go !
 [x] Create a model that can correctly classify images. Use lesson2-download.ipynb as a means of guidance. Remember, the more you practice the better you will get!
 
 [x] checkout cnn link http://cs231n.github.io/convolutional-networks/
-[ ] spunk and tensorflow for security blogpost
+[x] splunk and tensorflow for security blogpost
 [ ] checkout the forum and get involved?
 [ ] Do export/ hosting tutorial for cat breeds
 [ ] Do export/ host with own dataset
