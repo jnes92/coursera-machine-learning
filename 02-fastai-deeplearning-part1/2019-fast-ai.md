@@ -25,4 +25,7 @@ https://pytorch.org/tutorials/beginner/nn_tutorial.html
 - GAN IMAGE Art
 - Reinforcement learning test: NEAT
 - Reinforcement learning test: [openAI Gym](https://gym.openai.com/docs/)
-    - maybe test with toy_text: BlackJack
+  - maybe test with toy_text: BlackJack
+- NLP:
+  - try to identify users from teams messages ? :D 
+  - LSTM to write short project summaries 
