@@ -1,4 +1,4 @@
-# Week 1: Total 45min
+# Week 1: Total 45min (18.05.19)
 
 - 18.5.: Lesson 1 - 
 
@@ -91,7 +91,7 @@ Course 1 is about fundamentels, how to build a deep neural network
 
 ### 06 - Course Resources
 
-# Week 2: Total 2h / 4,25 h (estimated)
+# Week 2: 4,5 h (18. - 19.05.19)
 
 ## Logistic Regression as a Neural Network
 
@@ -424,3 +424,68 @@ some tips & tricks for python:
 - $log p(..) = \sum_{i=1}^m -L (\hat{y}^{(i)},y^{(i)} = - \sum  L((\hat{y}^{(i)},y^{(i)}$
 - Cost function was: $J(w,b) = \frac{1}{m} \sum_{i=1}^m L((\hat{y}^{(i)},y^{(i)})$
 - by minimizing cost we are maximazing likelihood estimation
+
+
+# Heroes of Deep Learning
+## Week 2 - Peiter Abbeel 
+
+how did you end up doing this ?
+- wanted to go pro basketball
+- fun, but no carrer
+- physics and math 
+- study engineering
+- everything interesting after studying
+- **AI WON**, because it can help all things
+- not one specific discipline
+
+why is dl / reinforcement learning taking off? 
+- autonomous helicopter
+- robot for laundry
+- combination of learning & domain expertise
+- expertise is time-consuming to build knowledge
+- 2012 imageNet breakthrough for supervised learning
+- revisit reinforcement learning and test
+
+whats next ?
+- more questions in deep reinforcement learning
+- where is data from 
+- how do you understand
+- safety issues
+- representation part can be
+- tease appart the pattern for reinforcement
+- how to learn safely
+- how to keep learning, if you are pretty good already
+- take a step back: learn reinforcement learning algorithm
+- learned programs that learns the entire learning program
+- do reinforcement learning as inner loop inside other algorithm
+
+how has understanding evolved?
+- master in stanford
+- initial knowledge from ai class
+- making sure you can see the connection to where its doing sth
+
+how to enter ai career
+- good time to enter ai
+- high demand of people, lot opportunities
+- self study a lot, Andrej Karpathys DL course
+- Berkely Deep Reinforcement Learning
+- try things yourself with TensorFlow, PyTorch, Theano, etc..
+- practice, practice
+- 16year old UK was kaggle 1st place
+
+phd or job at big company ?
+- how much mentoring you get ?
+- dedicated job to help you 
+- in companies it depends, not much guarantee
+- key: some one accelerates progress
+
+what deep reinforcement learning good at?
+- atari games from pixels
+- Berkeley: robot simulated learns walking
+- not starting from scratch would be nice
+
+how quickly deep reinforcement learning will be deployed?
+- starts with supervised learning
+- lot of business will be built like this
+- over time you start to give it objectives of achievements
+- bootstrapped by behavioural cloning
