@@ -91,7 +91,7 @@ Course 1 is about fundamentels, how to build a deep neural network
 
 ### 06 - Course Resources
 
-# Week 2: Total 0,5h / 4,25 h (estimated)
+# Week 2: Total 2h / 4,25 h (estimated)
 
 ## Logistic Regression as a Neural Network
 
@@ -251,3 +251,176 @@ just 1 step for gradient descent for n=2
 - was nice to have before, but is now essentially
 
 ## Python and Vectorization
+
+### 17 - Vectorization
+
+- $z = w^T x + b$, where $w, x \in \reals^{n_x}$
+- for loops is very slow
+- vectozired: $z = np * dot (w,x) +b$ is much faster
+- vectorized under 2ms
+- non-vectorized around 400-500ms
+- 300x difference to run
+
+```python
+import numpy as np
+a = np.array([1,2,3,4])
+print(a)
+
+import time
+
+a = np.random.rand(10000)
+b = np.random.rand(10000)
+
+tic = time.time()
+c = np.dot(a,b)
+toc = time.time()
+
+print(c)
+print("Vectorized version: " + str(1000*(toc-tic))+ "ms)
+```
+
+```python
+c = 0
+tic = time.time()
+for i in range(10000)
+    c+= a[i] * b[i]
+toc = time.time()
+
+print(c)
+print("Loop version: " + str(1000*(toc-tic))+ "ms)
+```
+- all demos run on cpu per default.
+- parallel instruction: simd: single instantion multiple data can be done on CPU & GPU
+
+
+### 18 - More Vectorization Examples
+
+- avoid for loops if possible
+- $u = Av$ with $u_i = \sum_j A_i_v v_i$
+  - non vect: 2 for loops i, j
+  - $u = np.dot(A,v)$
+- apply exponential operation on every element of a matrix
+  - non-vectorized: for range: u[i] = math.exp(v[i])
+  - vectorized `import numpy as np; u = np.exp(v)`
+- other useful functions `np.log(v) , np.abs(v), np.maximum(v,0), v**2`
+- check numPy detection before writing loops
+
+```python
+J = 0, dw = np.zeros((n-x,1)), db = 0
+
+[...]
+dw += x^{(i)} dz^{(i)}
+J /=m, dw /= m
+```
+
+- but we can do it even better, without a for loop over training examples
+
+### 19 - Vectorizing Logistic Regression
+
+- you need to repeat this step m times (m: training examples)
+```
+z^{i} = w^T x^{(i)} +b 
+a^{i} = \sigma(z^{(i)})
+```
+- Lets do X as Matrix: is $\in \reals^{n_x x m}$
+- $Z = [z^{(i)} ... z^{(m)}] = w^T X + \vec{b}$
+- `Z = np.dot(w.T, x) + b`
+- b is just a real number, but numpy will *broadcast* this to be a 1,1 Matrix
+- `A = [a^1, ... a^m ] = \sigma (Z) `
+
+
+### 20 - Vectorizing Logistic Regressions - Gradient Output
+
+- from before: $A = [a^1 .. a^m]$ , $Y = y^1 .. y^m$
+- $dZ = [dz^1 dz^2 ... dz^m] = A-Y$
+- before we had:
+```python
+J = 0, dw = np.zeros((n-x,1)), db = 0
+
+[...] for loop of m
+dw += x^{(i)} dz^{(i)}
+J /=m, dw /= m
+```
+
+- easy codelines for dw, db
+  - $db = 1/m * np.sum(dZ)$
+  - $dw = 1/m * X * dZ^T$
+
+**gradient descent for logistic regression:**
+
+```python
+Z = w^Tx + b = np.dot(w.T, X) + b 
+A = sigma (z)
+
+dZ = A-Y 
+
+dw = 1/m * X * dZ^T
+db = 1/m * np.sum(dZ)
+
+w = w - alpha * dw
+b = b - alpha * db
+```
+- you will still need to loop for each gradient descent step
+
+### 21 - Broadcasting in Python
+
+```python
+import numpy as np
+A = np.array(...)
+
+cal = A.sum(axis=0)
+print(cal)
+
+percentage = 100*A/cal #.reshape(1,4)
+print(percentage)
+```
+- axis=0 python sum vertically, horizontally would be 1
+- python broadcasting example
+- take A / cal ( 1,4 matrix )
+- 3by4 matrix divided by 1by4 matrix
+- how is this possible ?
+- python will auto expand values to vector
+- $\vec{1,2,3,4} + 100 = .. + \vec{100,100,100,100} =\vec{101,102,103,104}$
+- m,n matrix + 1,n matrix will make python to copy 1,n matrix M times
+
+general principle:
+- m,n matrix and calculate with 
+  - (1,n) -> copy to be m,n matrix
+  - (m,1) -> copy to be m,n matrix 
+  - do calculation
+
+### 22 - A note on python/numpy vectors
+
+- great flexibilty of python has advantages and disadvantages
+- you can do very much with very few lines
+- some broadcasting bugs might be hard to find
+
+some tips & tricks for python:
+- rank 1 vector will not transpose like you would expect
+- dont use datastructure as rank 1 array 
+  - dont use np.random.randn(5) -> `a.shape = (5,)` : rank 1 array
+  - `np.random.randn(5,1)` will make 1x5 matrix
+  - 5,1 column vector - 1,5 row vector
+  - `assert(a.shape == (5,1)` can help to avoid bugs, do some documentation
+  - `a = a.reshape((5,1))` to modify it afterwards
+
+### 23 - Quick tour of Jupyter/ iPython Notebooks
+
+- Shift-Enter to run cells
+- executed code runs on kernel
+- kernel died: sometimes kernel restart is needed
+
+### 24 - Explanation of log. regression cost function (optional)
+
+- quick justification for cost function
+- $\hat{y} = \sigma (w^T x +b)$ where $\sigma(z) = \frac{1}{1+e^{-z}}$
+- Interpret $\hat{y} = P(y= 1 | x)$ (binary classification)
+  - if y=1: $p(y|x) = \hat{y}$
+  - if y=0: $p(y|x) = 1 - \hat{y}$
+- can be combined to: $p(y|x) = \hat{y}^y (1 - \hat{y}) ^{(1-y)}$
+- $\log p(y|x) = \log \hat{y}^y (1 - \hat{y}) ^{(1-y)} = y log \hat{y} + (1-y) \log (1-\hat{y}) = - L (\hat{y},y)$
+- minimizing Loss should maximize the probability
+- for maximum likelihood estimation:
+- $log p(..) = \sum_{i=1}^m -L (\hat{y}^{(i)},y^{(i)} = - \sum  L((\hat{y}^{(i)},y^{(i)}$
+- Cost function was: $J(w,b) = \frac{1}{m} \sum_{i=1}^m L((\hat{y}^{(i)},y^{(i)})$
+- by minimizing cost we are maximazing likelihood estimation
