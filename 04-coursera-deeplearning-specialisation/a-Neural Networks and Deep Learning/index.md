@@ -425,6 +425,175 @@ some tips & tricks for python:
 - Cost function was: $J(w,b) = \frac{1}{m} \sum_{i=1}^m L((\hat{y}^{(i)},y^{(i)})$
 - by minimizing cost we are maximazing likelihood estimation
 
+# Week 3 - 1h / 4h 40m
+## Shallow Neural Networks
+
+### 25 - Neural Networks Overview 
+
+- logistic regression computes computation graph: $z = w^T x +b -> a = \sigma(z) -> L (a,y)$
+- in nn: stack calculation input $z^{[1]}$ for Layer 1, $z^{[2]} for layer 2
+  - not round brackets (for training examples)
+- you can compute $a^{[1]} from z^{[1]}$ and continue like this to get $L(a^{[2],y})$
+- backpropagation will be also used like $da^{[2]}$, etc.
+- take logistic regression and repeat it twice.
+
+### 26 - Neural Networks Representation 
+
+- Input layer: contains input variables / features
+- Hidden Layer: Not observed values for training set
+- Output Layer: Single final layer
+
+**Notation**:
+- $a^{[0]} = X$: Activations of input layer
+- $a^{[1]}$: Activation of first hidden layer
+- $a^{[2]}$: output Layer -> $\hat{y} = a^{[2]}$
+
+- convention: 2 Layer NN (dont count input layer)
+- hidden layer has associated parameters $w^{[1]},b^{[1]}$
+
+### 27 - Computing a Neural Network´s Output
+
+- neural networks repeats logistic regression
+- 2 steps of computation:
+  - first node of nn:
+    - $z_1^{[1]} = w_1^{[1] T} x +b^{[1]}_1$
+    - $a_1^{[1]} = \sigma (^{[1]} )$
+  - second node:
+    - $z_2^{[1]} = w_2^{[1] T} x +b^{[1]}_2$
+    - $a_2^{[1]} = \sigma (z_2^{[1]} )$
+- Compute as vectors:
+  - $z^{[1]} = W^{[1]} X + b^{[1]}$
+  - $a^{[1]} = \sigma ( z^{[1]} )$
+  - remember: 
+  $a^{[0]} = X$ (Alias input features)
+  - $\hat y = a^{[2]} = \sigma( z^{[2]} )$
+  - $z^{[2]} = W^{[2]} a^{[1]} + b^{[2]}$
+- compute output of nn in 4 lines of code
+
+
+### 28 - Vectorizing across multiple examples
+
+- $z^{[1]} = W^{[1]} X + b^{[1]}$
+- $a^{[1]} = \sigma ( z^{[1]} )$
+- a^{[2]} = \sigma( z^{[2]} )$
+- $z^{[2]} = W^{[2]} a^{[1]} + b^{[2]}$
+- need to repeat for all training examples $a^{[2](i)}$ : example i, layer 2
+- for i=1 to m ....
+- vectorized: 
+  - $Z^{[1]} = W^{[1]} X + b^{[1]}$
+  - $A^{[1]} = \sigma (Z^{[1]})$
+  - $Z^{[2]} = W^{[2]} A^{[1]} + b ^{[2]}$
+  - $A^{[2]} = \sigma (Z^{[2]})$
+- horizontal index: training examples
+- vertical index: activation of units
+
+
+### 29 - Explanation for Vectorized Implementation 
+
+- showing matrix stuff, which seems optional
+
+### 30 - Activation functions
+
+- sigmoid function is only one option
+- more general function
+  - $a^{[1]} = g( z^{[1]} )$
+  - $a^{[2]} = g( z^{[2]} )$
+- other possibilites:
+  - $G = tanh (z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$
+  - tanh is almost always better than sigmoid (centering of data, closer to 0) for hidden layer
+  - exception: output layer should use sigmoid for binary classification
+  - you can mix activiation functions for the layers: $g^{[1]} = tanh (z^{[1]})$, $g^{[2]} = \sigma ( z^{[1]})$
+- for very small or big z -> slope is near 0 -> slow down gradient descent
+- Rectified Linear Unit is pretty nice ($a= max (0,z)$)
+  - derivative is 1 for positive, 0 for negative
+
+tipps:
+- for binary classification: sigmoid for output
+- for hidden Layer: most use ReLu
+- or Leaky ReLu (not 0 vor negatives), but not used often
+
+summary:
+- never use sigmoid (except output layer for binary classification)
+- most commonly used ReLU, try leaky Relu if you want
+
+### 31 - Why do you need non-linear activation functions
+
+- why do we need activation functions?
+- imagine $g(z)=z$ "linear activation function"
+- $a^{[2]} = w`x + b`$ will always output a linear function
+- no matter how many layers you add it will keep doing just as good as 1 (would be standard logistic regression again)
+- 1 linear function + 1 linear function = 1 linear function with other parameters
+- 1 case: if y is real number, e.g. housing price $y \in \reals$, might be okay so $\hat y$ can use for output layer (y is in same range like) -> but here ReLu also better (no negative housing price at all)
+
+### 32 - Derivatives of activation functions
+
+sigmoid:
+- $g(z) = \frac{1}{1+e^{-z}} = a$
+- $g'(z) = \frac{d}{dz} g(z) = \frac{1}{1+e^{-z}} ( 1 - \frac{1}{1+e^{-z}} ) = g(z) (1- g(z))$
+- $g'(z) = a(1-a)$: quickly compute derivatives 
+
+tanh:
+- $g(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$
+- $g'(z) = 1- ( \tanh (z))^2$
+- $g'(z) = 1 - a^2$
+
+ReLu & Leaky:
+- $g(z) = max(0,z)$
+- $g'(z) = z<0: 0, z>0: 1$ (undefined for z = 0, but we dont care)
+
+Leaky ReLu:
+- $g(z) = max(0.01,z)$
+- $g'(z) = z<0: 0, z<0.01: 1$
+
+### 33 - Gradient Descent for Neural networks
+
+- gradient descent with 1 hidden layer
+- Parameters $W^{[1]}, b^{[1]}, w^{[1]}, b^{[2]}$
+- Cost function (assume binary classification)
+  - $J(W^{[1]},b^{[1]},w^{[2]}, b^{[2]}): \frac{1}{m} \sum L(\hat y,y)$
+- Gradient descent: repeat
+  - Compute predicts $(\hat y^{(i)}$
+  - Compute derivatives $dw^{[1]}, db^{[1]},...$
+  - $w^{[1]} = w^{[1]} - \alpha * dw^{[1]}$
+  - $b^{[1]} = b^{[1]} - \alpha * db^{[1]}$
+
+Forward propagation: 
+- (or replace sigma with global activation func g)
+- $Z^{[1]} = W^{[1]} X + b^{[1]}$
+- $A^{[1]} = \sigma (Z^{[1]})$
+- $Z^{[2]} = W^{[2]} A^{[1]} + b ^{[2]}$
+- $A^{[2]} = \sigma (Z^{[2]})$
+
+Backpropagation:
+- $dZ^{[2]} = A^{[2]} - Y$
+- $dW^{[2]} = \frac{1}{m} dZ^{[2]} * A^{[2] T}$
+- $db^{[2]} = \frac{1}{m} np.sum(dZ^{[2]}, axis=1, keepdims = True)$
+- $dZ^{[1]} = W^{[2] T} dzZ{[2]} .* g^{[1]} (z^{[1]})$ (element-wise)
+- $dW^{[1]} = \frac{1}{m}  dZ^{[1]} X^T$ or $a^{[0]T} instead of X
+- $db^{[1]} = \frac{1}{m}  np.sum(dZ^{[1]}, axis=1, keepdims=True$
+
+
+### 34 - Backpropagation intuition (optional)
+### 35 - Random Initialization
+
+- random initialization is needed for nn
+- for logistic regression starting with 0 was fine
+- if we init w and b to 0 matrixes, we get a problem
+  - $a_1^{[1]} = a_2^{[1]}$ -> with backprop: $dz_1^{[1]} = dz_2^{[1]}$ also identical
+  - hidden units would be symmetric / identical function
+  - after every step they would still be the same
+  - no point to have more than 1 hidden unit
+- Solution: Initialize randomly with small random value
+  - if weights are too large -> W is big -> W is big -> end points of activation function a -> slow algorithm (gradient descent)
+  - sometimes 0.01 can be adjusted for deep networks
+
+```python
+w_one = np.random(randn((2,2))) * 0,01
+b_one = np.zero((2,1))
+w_two = np.random(randn((1,2))) * 0,01
+b_two = np.zero((2,1))
+```
+
 
 # Heroes of Deep Learning
 ## Week 2 - Peiter Abbeel 
