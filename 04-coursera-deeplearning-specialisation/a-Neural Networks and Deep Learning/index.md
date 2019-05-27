@@ -594,6 +594,77 @@ w_two = np.random(randn((1,2))) * 0,01
 b_two = np.zero((2,1))
 ```
 
+## Week 4 - 5 h total  - Deep Neural Networks
+### 36 - Deep L Layer Neural Network
+
+- videos shorter this week
+- more time for programming exercise
+- deep neural network: 
+  - logistic regression (shallow model)
+  - 3 Layer NN (2 hidden layers), 5 hidden layers called deep
+- try layers as parameter and also learn this one
+- deep neural network notation
+  - imagine 4 Layer NN with 3 inputs, 5, 5 , 3 ,1 units
+  - $L = 4$ (#layers)
+  - $n^{[l]}$ #units in layer l
+  - $n^{[0]}$
+  - $a^{[l]}$ activations in layer l $a^{[l]} = g^{[l]} ( z^{[l]}))$
+  - Output unit: $\hat y = a^{[l]}$
+
+### 37 - Forward propagation in a Deep Network
+
+- $x = a^{[0]}$
+- $z^{[1]} = w^{[1]} x + b^{[1]}$
+- $a^{[1]} = g^{[1]} (z^{[1]})$
+- $z^{[2]} = w^{[2]} a^{[1]} + b^{[2]}$
+- $a^{[2]} = g^{[2]} (z^{[2]})$
+- ...
+- $z^{[4]} = w^{[4]} a^{[3]} + b^{[4]}$
+- $a^{[4]} = g^{[4]} (z^{[4]})$
+- general: $z^{[l]} = w^{[l]} a^{[l-1]} + b^{[l]}$
+
+vectorized:
+$Z^{[l]} = W^{[l]} A^{[l-1]} + b^{[l]}$
+$A^{[l]} = g^{[l]} (Z^{[l]})$
+- for loop for activation functions for the layers 
+- for (1..total number of layers)
+
+### 38 - Getting your matrix dimensions right
+
+- $z^{[1]} = w^{[1]} x + b^{[1]}$, ignore bias term b for now
+- Layer 1 has 3 hidden units -> $n^{[1]} = 3, n^{[2]} =5, n^{[3]} =4 , n^{[4]} = 2, n^{[5]} = 1$
+- $z^{[1]} = (3,1) or (n^{[1]}, 1) w^{[1]}: (n^{[1]},n^{[0]})$
+- in general: 
+  - $w^{[l]} = (n^{[l]}, n^{[l-1]})$ 
+  - $b^{[l]}: (n^{[l]}, n^{[l-1]})$
+- for backprop $dw^{[l]}: (n^{[l]}, n^{[l-1]})$
+
+
+vectorized implementation:
+- $Z^{[1]} = W^{[1]} X + b^{[1]}$ 
+  - $Z^{[1]} : (n^{[1]},m)$
+  - $W^{[1]} : (n^{[1]}, n^{[0]})$
+
+### 39 - Why deep representations ?
+
+- face recognition could be: 
+  - Layer 1 as edge detector
+  - Build upon lines to find outlines like eyes, noses, etc.
+  - Build face parts togeteer and recognize face
+- speech recognition
+  - first layer: low level audio wave form features (up, down, white-noise, pitch)
+  - composing: unit of sounds, Phonemes
+  - composing: recognize words
+  - composing: recognize phrases, sentences
+- deep learning $\approx$ how we think brains work
+- circuit theory: small deep network can be much better than shallower networks with exponentially more hidden units
+  - less "gates" force functions to be much more complex, hidden layer is really big
+  - flat xor examples: much easier to compute with more layers
+
+### 40 - Building blocks of deep neural networks
+### 41 - Forward and backward propagation
+### 42 - Parameters vs Hyperparameters
+### 43 - What does this have to do with the brain ?
 
 # Heroes of Deep Learning
 ## Week 2 - Peiter Abbeel 
