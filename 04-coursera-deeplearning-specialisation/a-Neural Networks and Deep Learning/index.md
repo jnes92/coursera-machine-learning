@@ -658,3 +658,60 @@ how quickly deep reinforcement learning will be deployed?
 - lot of business will be built like this
 - over time you start to give it objectives of achievements
 - bootstrapped by behavioural cloning
+
+## Week 3 - Ian Goodfellow
+
+personal story
+- neuroscience
+- ai was a good idea, but practice just games
+- some real science
+- interested in one paper
+- build gpu cuda based machine (first at stanford)
+- svm and other were outperformed
+
+invention of gans (by Ian):
+- studied generative modeling
+- lot of training data and generate out of it
+- arguing at a bar, do this and this
+- started coding same day (around midnight)
+- first working version finished a day later
+
+near death exp:
+- while waiting for result of brain inspection
+- try research ideas, carrying out work
+
+future of gans
+- supervised learning, 
+- generating training data
+- simulating experiments
+- more art than science :D
+- GANS more reliable like Deep Learning has become -> more success
+- if not: just show it, later be replaced
+
+additional book about deep learning:
+- wrote first textbook on modern deep learning (eng, chinese)
+- start with focused introduction for the maths
+- linear algebra are important
+- but for excellent practitioners: understand fundamentels
+- but not all of it right before
+- crash-course math and just dive in
+
+ai thinking evolved
+- 10 years ago: community - how to get it working
+- basic scientific analysis
+- 5 years ago: parts open
+- hardest problem: which way to go
+- reinforcement, unsupervised, machine learning is fair, social challenges
+
+
+advice for starters:
+- write good code and put it on github
+- interesting project, solving a problem
+- writing papers is also good (but polished is hard)
+- work on projects
+
+adversarial examples:
+- new field: machine learning security
+- fool machine learning algorithm into code what it should not
+- important to build security near the start of it
+- anticipating security problems from the start
