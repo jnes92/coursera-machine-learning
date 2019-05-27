@@ -425,7 +425,7 @@ some tips & tricks for python:
 - Cost function was: $J(w,b) = \frac{1}{m} \sum_{i=1}^m L((\hat{y}^{(i)},y^{(i)})$
 - by minimizing cost we are maximazing likelihood estimation
 
-# Week 3 - 1h / 4h 40m
+# Week 3 4h 40m
 ## Shallow Neural Networks
 
 ### 25 - Neural Networks Overview 
