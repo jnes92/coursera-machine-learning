@@ -662,9 +662,49 @@ vectorized implementation:
   - flat xor examples: much easier to compute with more layers
 
 ### 40 - Building blocks of deep neural networks
+
+- Layer l: $W^{[l]}, b^{[l]}$
+- Forward: Input $a^{[l-1]}$, output $a^{[l]}$
+  - $z^{[l]}= w^{[l]} a^{[l-1]} + b^{[l]}$ - cache $z^{[l]}$
+  - $a^{[l]}= g^{[l]} (z^{[l]})$
+- Backward Input $da^{[l]}$, cached $z^{[l]}$, output $da^{[l-1]}, dw^{[l]}$
+![Scheme](40_blocks.png)
+
 ### 41 - Forward and backward propagation
+
+- Forward: Input $a^{[l-1]}$, output $a^{[l]}$, cache ($z^{[l]}$)
+  - $Z^{[l]} = w^{[l]} a^{[l-1]} +b^{[l]}$ 
+  - $A^{[l]} = g^{[l]} (z^{[l]})$
+  - initialize with input layer X
+- Backward: 
+  - $dZ^{[l]} = dA^{[l]} .* g^{[l]'} (z^{[l]})$
+  - $dW^{[l]} = \frac{1}{m} dZ^{[l]} A^{[l-1]T}$
+  - $db^{[l]} = \frac{1}{m} np.sum(dz^{[l]}, axis=1, keepdims=True)$
+  - $dA^{[l-1]} = W^{[l] T} dZ^{[l]}$
+  - initialize $dA^{[l]} = \frac{y}{a} + \frac{1-y}{1-a}$
+
 ### 42 - Parameters vs Hyperparameters
+
+- "Real" Parameters $W,b$
+- Hyperparameters: Hyperparameter determines / control W,b parameters
+  - learning rate $\alpha$
+  - #iterations
+  - #hidden layers $L$
+  - #hidden units $n^{[1]}, n^{[2]}, ..$
+  - choice of activation function
+- other hyperparameters
+  - momentum, mini batch size, regularizations
+- Applied Deep Learning process: Idea $\rarr$ Code $\rarr$ Experiment $\rarr$ Idea $\rarr$ ..
+- Plot Cost function for different hyperparameters
+
 ### 43 - What does this have to do with the brain ?
+
+- not a whole lot
+- analogy "Its like the brain", very simple to report this line
+- brain and single unit nn get signals from neurons, sends electricity to other neurons
+- even neuroscientists not know much about it today (still a single neuron can do a lot more)
+- completely unclear how the learning principle is 
+- deep learning can just map really complex functions X $\rarr$ y
 
 # Heroes of Deep Learning
 ## Week 2 - Peiter Abbeel 
