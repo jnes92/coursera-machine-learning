@@ -35,3 +35,23 @@ $J = (a-1) * (b+c)$
 8. large weights random: slow training (inputs very large, gradient close to 0)
 9. Shapes: b1: (4,1) W1: (4,2)  w2 (1,4) b2 (1,1)
 10. Shape: 4,m
+
+# Week 4 Quiz
+
+1. cache: pass variables during forward to backward
+2. hyperparams: #iterations, #layer, alpha, #units
+3. deeper layers compute more complex features
+4. for loop is needed for the layers
+5. 
+```python
+for(i in range(1, len(layer_dims))):
+  parameter[‘W’ + str(i)] = np.random.randn(layers[i], layers[i-1])) * 0.01
+  parameter[‘b’ + str(i)] = np.random.randn(layers[i], 1) * 0.01
+```
+6. L is 4 hidden layers 3
+7. forward and backprop need to know activation functions for its layers
+8. Circuit theory: true
+9. W1 (4,4), b1(4,1), W2(3,4) b2(3,1) W3 (1,3) b3(3,1) 
+- $W^{[l]}: (n^{[l]}, ^{[l-1]}$
+- $b^{[l]}: (n^{[l]}, 1)$
+1.  $(n^{[l]}, n^{[l-1]})$
