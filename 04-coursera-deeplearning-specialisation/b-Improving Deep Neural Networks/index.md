@@ -182,12 +182,65 @@ implementation tips
     - if seen as seperate task you will mix "Orthogonalization" with early stopping
     - cant work independently on the two tasks :-( 
 
-
-
 ### Setting up your optimization problem
 #### 09 - Normalizing inputs
+
+- two steps: 
+  - substract mean $\mu = \frac{1}{m} \sum x^{(i)}$
+  - $x = x - \mu$
+  - normalize variance $\sigma^2 = \frac{1}{m} \sum_{i=1}^{(i)} .* ^2$
+  - $x /= \sigma^2$
+- why do we want to normalize? 
+  - if features are on different scales ($x_1: 1..1000, x_2: 0..1$)
+  - cost function will be more symmetric for normalized
+  - we need a smaller learning rate for unnormalized
+
 #### 10 - Vanishing / Exploding gradients
+
+- $\hat{y} = w^{[l]} w^{[l-1]} w^{[l-2]} ... w^{[2]} w^{[1]}$
+- $a^{[2]} = g(z^{[1]}) = g(w^{[2]} a^{[1]} )$
+- e.g. $\hat y = 1.5^{L-1} x$ explodes really fast
+- or if values smaller 1, decrease exponentially
+- $w^{[l]} > I (or 1)$: Explode exponentially
+- $w^{[l]} < I (or 1)$: Vanish exponentially
+
 #### 11 - Weight Initialization for Deep Networks
+
+- better choice of random initialization can improve the vanish / exploding problem
+- for large n -> smaller weights $w$
+- $Var(w) = \frac{2}{n}$
+- `WL = np.random.randn(entershapehere) * np.sqrt(2/n[l-1])`
+
+other variants:
+- version is assuming ReLu activation
+- **Xavier** for tanh: constant 1 instead of ()  `np.sqrt(1/n[l-1]) `
+- `np.sqrt(2/n^[l-1]+n^[l])`
+- could be also a hyperparameter
+
 #### 12 - Numerical approximation of gradients
+
+checking your derivative computation:
+- $\frac{f(\Theta + \epsilon) - f(\Theta - \epsilon)}{2 \epsilon} \approx g(\Theta)$ 
+- exactly definition of f' for epsilon limit against 0
+
 #### 13 - Gradient Checking
+
+- Take all Parameters W,b and reshape into big vector $\Theta$
+  - $J(w,b,...) = J(\Theta)$
+- Take all gradients dW, db and reshape into a big vecor $d\Theta$
+
+grad(ient) check:
+- for each i:
+- $d\Theta_\approx [i]$ = J(... +e) - J(... -e) / 2e 
+- $d\Theta_\approx  \approx d\Theta$ ???
+- compute euclidian distance $\frac{ || d\Theta_\approx  -d\Theta ||}{||d\Theta_\approx||_2  + ||d\Theta||}$
+- great: $10^{-7}$, ok: $10^{-5}$, bad: $10^{-3}$
+
 #### 14 - Gradient Checking Implementation Notes
+
+- dont use grad check in training, only for debugging
+- if algorithm fails grad check, look at components to try to identify bug, compare values of 
+  - e.g. db is incorrect, but dw looks good all the time, -> check db functions
+- remember regularization term, if you used it
+- does not work with dropout
+- run with random initialization (can happen that its just correct if init with $\approx$ 0 for w,b)
