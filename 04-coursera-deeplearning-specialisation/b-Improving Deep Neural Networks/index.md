@@ -2,7 +2,7 @@
 # Improving Deep Neural Networks
 # Hyperparameter tuning, Regularization and Optimization
 
-## Week 1
+## Week 1 - total 8h
 ### Setting up your Machine Learning Application
 #### 01 - Train / Dev / Test sets
 
@@ -94,10 +94,95 @@ Optimal error (Bayes) error $\approx$ 0%
 
 ### Regularizing your neural network
 #### 04 - Regularization
+
+- for high variance -> try regularization first
+- prevent overfitting 
+
+for **Logistic regression**:
+- $J (w,b) = \frac{1}{m} \sum L(\hat{y},y) + \frac{\lambda}{2m} || w || ^2$
+- regularization for b is not needed (just 1 number)
+- $L_2$ regularization: $|| w ||_2^2  = \sum_{j=1}^{n_x} w_j^2 = w^Tw$
+- $L_1$ regularization $\frac{\lambda}{m} \sum_{i=1}^{n_x} | w | = \frac{\lambda}{m} || w ||_1$
+- $L_2$ is used more often
+- $\lambda$ : Regularization parameter, hyperparameter (*lambd for python, because reserverd keyword*)
+
+for **neural network**
+- $J(w^{[1]}, b^{[1]} ..) = \frac{1}{m} \sum_{i=1}^m L(\hat{y},y) +  \frac{\lambda}{2m} \sum_{l=1}^L || w^{[l]} || ^2$ 
+-  $|| w^{[l]} ||_F ^2 = \sum_{i=1} \sum_j ( w_{ij}^{[l]} )^2$
+-  $w: (n^{[l]}, n^{[l-1]})$
+-  called "Frobenius norm", instead of $L_2$
+
+for gradient descent this updates 
+- $dw =$ from backprop + $\frac{\lambda}{m} w^{[l]}$
+- $w^{[l]} = w^{[l]} - \alpha dw^{[l]} = w^{[l]} \alpha[(from backprop) + \frac{\lambda}{m} w^{[l]}]$
+- $w^{[l]} = w^{[l]} - \frac{\alpha \lambda}{m} w^{[l]} - \alpha$ (from backprop)
+- also called "weight decay", because in the end you multiply with $w(1- \frac{\alpha \lambda}{m})$
+
 #### 05 - Why regularization reduces overfitting
+
+- $J(w^{[l]}, b^{[l]}) = \frac{1}{m} \sum_{i=1}^m L(\hat{y},y) +  \frac{\lambda}{2m} \sum_{l=1}^L || w^{[l]} ||_F ^2$ 
+- intuition of zero-ing out units is wrong, they will be just very small
+- intuition tanh:
+  - if lambda is large parameters $w$ will be small, so will $z$
+  - g(z) would be roughly linear
+  - if every layer is linear, your network is just a linear function
+- implemtation tip: J regularized = J default + regularization term
+- plot Cost function, to iterations (also with second term)
+
 #### 06 - Dropout Regularization
+
+- 0.5 chance of keeping or removing each nodes / units
+- remove all the in/ out lines
+- train with reduced network
+- smaller network for training reduces overfitting
+
+**Inverted dropout**
+- illustrate with layer $l=3$, $keep.prob = 0.8$
+- d3 (dropout for layer 3)
+```python
+d3 = np.random.rand(a3.shape[0], a3.shape[1]) < keep.prob
+a3 =  np.multiply(a3,d3) # a3 .* d3, dotwise
+a3 /= keep.prob
+```
+
+- most common dropout technique: inverted dropout
+  
+making predictions at test time:
+- $a^{[0]} = X$
+- no dropout for test time?
+  - $z^{[1]} = w^{[1]} a^{[0]} +b^{[1]}$ -> $\hat y$
+
 #### 07 - Understanding Dropout
+
+intuition: cant rely on any one feature, so have to spread out weights
+- shrinking squared norm of the weights
+- is formally an adaptive form of $L_2$
+- keep.prob can vary between layers
+  - for big layers you can dropout 0.5
+  - for small layers 0.7 or even 1
+  - dropout is even possible for input layers (not used often, close to 1)
+
+implementation tips
+- often used in computer vision
+- Downside: J is not defined, so plotting or analyzing is much harder
+- start with dropout 1, make sure its working and then activating dropout
+
 #### 08 - Other regularization methods
+
+- data augmentation
+  - eg. with images you can: flip x, crop, rotate, zoom
+  - eg. for digit: distortions,
+- early stopping
+  - while running gradient descent plot training error / or J 
+  - plot dev set error in the same graph
+  - early stopping: stop at Iteration XY (e.g. 50%)
+  - downside: 
+    - Optimize Cost function J (Gradient descent, Adam, ...)
+    - Not overfit (Regularization, ...)
+    - if seen as seperate task you will mix "Orthogonalization" with early stopping
+    - cant work independently on the two tasks :-( 
+
+
 
 ### Setting up your optimization problem
 #### 09 - Normalizing inputs
