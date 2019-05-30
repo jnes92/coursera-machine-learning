@@ -13,3 +13,15 @@
 8. reduc regul, lower training error
 9.  data augment, dropout, l2 reg
 10. cost function faster
+
+## Week 2 - Quiz 2:
+1. (): example, [] layer, {}: mini, batch
+2. one iteration of mini batch is faster than one iteration of batch gradient descent
+3. if mini batch size is m -> batch gradient descent, if its 1 you lose vectorization
+4. if you use mini batch : acceptable
+5. 7.5, 10 -> $v_2 = \beta v_{t-1} + (1- \beta) \Theta_t = 0,5 * (0,5*10°) C + 0,5*10$
+6. $e^t$, because e is bigger than 1
+7. increase -> shift red line, decrease: more oscilattion
+8. (1) is GD, 2 is small b, 3 is big b (0.9 is best)
+9. tuning a, adam, mini batch, better initialize
+10. adam **should not** be used with batch gradient descent
