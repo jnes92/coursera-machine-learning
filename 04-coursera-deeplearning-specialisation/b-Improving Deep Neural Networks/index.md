@@ -244,3 +244,223 @@ grad(ient) check:
 - remember regularization term, if you used it
 - does not work with dropout
 - run with random initialization (can happen that its just correct if init with $\approx$ 0 for w,b)
+
+## Week 2 
+### Optimization algorithms
+#### 15 - Mini batch gradient descent
+
+- because iterative process
+- quickly prototyping models is important
+- large data -> slow
+- fast optimization -> more efficiency
+
+
+batch vs mini batch gd:
+- vectorization allows to efficiently compute m examples
+- what if m = 5.000.000 ?
+- train on entire training set for 1 Step of Gradient descent
+- faster algorithm, if you split training set to smaller training sets (mini-batches)
+- e.g. mini-batch has 1000 examples each
+- $X = [ X^{\{1\}}, X^{\{2\}}, ..., X^{\{5000\}} ]$ with ($n_x, 1000$)
+- split Y accordingly with ($1, 1000$)
+- mini-batch t: $X^{\{t\}}, Y^{\{t\}}$
+  - () braces: training example
+  - [] braces: layer in nn
+  - {} braces: mini batch set
+- **batch gd:** process complete training set in one batch at the same time
+- **mini-batch gd**: algorithm process single mini batch at the same time 
+
+pseudo-code for one epoch: 
+> **epoch**: 1 single pass through training set
+```python
+for t = 1 ... 5000
+#     gradient_descent( x{t}, y{t} )
+    forward_prop on x{t} 
+    # zI = wI x{t} + bI
+    # Ai = gI x ZI
+    # [...]
+    # AL = gL + ZL
+    J{t} = compute_cost() * 1/1000 + regularization_term
+    backward_prop() on J{t}
+    update_weights()
+    # 
+```
+
+#### 16 - Understanding mini-batch gd
+
+- batch gradient descent should decrease on every iteration
+- mini-batch gradient descent **dont** decrease on **every** iteration
+- downwards trend, but noisier with mini-batch
+
+choosing mini-batch size
+- if mini batch size = m $\rArr$ Batch gradient descent
+- if mini batch size = 1 $\rArr$ stochastic gradient descent (every example is own mini-batch)
+- for optimizing the cost function this means
+  - batch gradient descent: low noise, large steps to the minimum
+  - sgd: extremely noisy, but good direction most times, oscillate around minimum (wont stay there)
+- in practice: sth in between 1,m
+  - **BGD**: huge training set -> too long per iteration (for huge training set)
+  - **SGD**: fast progress, noise can be removed by smaller learning rate, **loose** speed up from **vectorization**
+  - in-between: fastest learning, because we have vectorization & make progress without waiting for entire training set
+  - dont always hit local minimum exactly, but most times
+- guidance
+  - small training set (m<2000): BGD
+  - typical min-batch size: 64, 128, 256, 512 (code runs faster if power of 2 some times), rarely 1024
+  - make sure mini batch fits in CPU / GPU memory
+
+#### 17 - Exponentially weighted averages
+
+- faster algorithm than gradient descent
+- needed to use exponentially weighted averages
+- $v_0 = 0$
+- $v_1 = 0.9 v_0 + 0.1 \Theta_1$
+- $v_t = 0.9 v_{t-1} + 0.1 \Theta_t$
+- plot moving average v(t)
+- general: $v_t = \beta v_{t-1} + (1- \beta) \Theta_t$, with $\beta = 0.9$
+- vt approximately averaging over $\approx \frac{1}{1- \beta}$ days, 
+  - eg. $\beta = 0.9$ last 10 days temperature
+  - e.g. $\beta = 0.98$ last 50 days
+- averageing over larger window adapts slowly, more latency
+  - $\beta = 0.5 \approx$ 2 days
+  - averaging over 2 days, much more noisy, but adapts quickly to changes
+- is called ***exponentially weighted moving averages***
+- sth. in between works best :)
+
+#### 18 - Understanding exponentially weighted averages
+
+- $v_t = \beta v_{t-1} + (1- \beta) \Theta_t$
+- how does it compute averages? 
+  - $v_{100} = 0.1 \Theta_{100} + 0.9 ( 0.1 \Theta_{99} + 0.9 ( 0.1 \Theta_{98} + 0.9 v_{97} ) )$
+  - $v_{100} = 0.1 \Theta_{100} + 0.1 x 0.9 \Theta_{99} + 0.1 (0.9)^2 \Theta_{98} + 0.1 (0.9)^3 \Theta_{97} + 0.1 (0.9)^4 \Theta_{96} + ...$
+- is a weighted sum of exponentially decaying function .* the temperature values
+- all coefficients sum up to $\approx 1$
+- $1- \epsilon^{1 / \epsilon} = \frac{1}{e}$
+- with $\epsilon = 1- \beta$
+
+implementing exp. weighted averages:
+```
+V_theta = 0 
+for i...m:
+get next Theta_t
+    V_theta = beta * v_theta + (1 - beta) Theta_t
+```
+
+#### 19 - Bias correction in exponentially weighted averages
+
+- bias correction can make computation more accurate
+- initialized $v_0 =0$ starts on y=0
+- $v_1 = 0.98 v_0 + 0.02 \Theta_1$ -> $v_0$ will be ignored
+- modify to make it more accurate for initial phase
+- $\frac{v_t}{1- \beta^t}$
+  - for t=2: $1-\beta^t = 1 - 0.98^2 = 0.0396 = \frac{0.0196 * \Theta_1 + 0.02 \Theta_2 }{0.0396}$
+- for warming up averages
+- bias correction is not needed if you dont care about initial phase, where averages are "warming up"
+
+#### 20 - Gradient descent with momentum
+
+- almost always faster than standard gd
+- compute exponential moving average to update gradients
+- gradient descent can take a lot of steps and slowly oscillate to the minimum, small learning rate needed
+- vertically you want slower learning (too minimize oscillation), but horizontally you want faster learning
+- momentum: on iteration t
+  - compute dW, dB on current mini-batch
+  - compute $v_{dw} = \beta v_{dw} + (1- \beta) dW$
+  - $v_{db} = \beta v_{db} + (1- \beta) db$
+  - $w = w- \alpha v_{dw}$, $b= b - \alpha v_{db}$
+- momentum will be close to 0 for vertical line and just go for the horizontal direction
+- now we have 2 hyperparameters $\alpha + \beta$
+- $\beta = 0.9$ is often a good fit (average of last 10 gradients)
+- alternative without $1-\beta$ :
+  - $v_{dw} = \beta v_{dw} + dW$ 
+  - works also fine, but less intuitive, because it affects scaling..
+
+#### 21 - RMSprop
+
+- Root mean square prop
+- can also speed up gradient descent
+- vertical axis: b, horizontal is parameter w
+- On iteration t:
+  - compute derivatives dW,dB on current mini-batch
+  - $S_{dw} = \beta S_{dw}+ (1-\beta) dw^2$
+  - element-wise squaring
+  - $S_{db} = \beta S_{db}+ (1-\beta) db^2$
+  - updating w,b:
+  - $w = w - \alpha \frac{dw}{\sqrt{S_{dw}}}$
+  - $b = b - \alpha \frac{db}{\sqrt{S_{db}}}$
+- intuition: 
+  - dW should be small -> update w faster
+  - dB large -> small updatexy
+  - will also flatten the updates vertically
+  - larger learning rate possible
+- combine RMSprop + momentum, parameter called $\beta_2$
+- RMSprop was first made public in a coursera course :D
+
+#### 22 - Adam optimization algorithm
+
+- many researcher found many optimization algorithm, but they did not generalize good for all neural networks
+- adam optimization is one of a few, who stands out
+- basically: momentum + RMSprop
+
+$$
+v_{dw} = 0, s_{dw} = 0, v_{db} = 0, s_db = 0
+$$
+on iteartion t:
+- compute dw,db using current mini-batch
+- momentum update  with $\beta_1$
+  - $v_dw = \beta_1 v_{dw} + (1- \beta_1) dw$
+  - $v_db = \beta_1 v_{db} + (1- \beta_1) db$
+- do RMS prop update  with $\beta_2$
+  - $S_{dw} = \beta_2 S_{dw} + (1- \beta_2) dw^2$
+  - $S_{db} = \beta_2 S_{db} + (1- \beta_2) db^2$
+- correction  for v & S
+  - $v_{dw}^{correction} = \frac{v_{dw}}{(1- \beta_1^t)}$
+  - $v_{db}^{correction} = \frac{v_{db}}{(1- \beta_1^t)}$
+  - $S_{dw}^{correction} = \frac{S_{dw}}{(1- \beta_2^t)}$
+  - $S_{db}^{correction} = \frac{S_{db}}{(1- \beta_2^t)}$
+- perform updates:
+  - $w = w - \alpha \frac{v_{dw}^{corrected}}{\sqrt{S_{dw}^{corrected} + \epsilon}}$
+  - $b = b - \alpha \frac{v_{db}^{corrected}}{\sqrt{S_{db}^{corrected} + \epsilon}}$
+- hyperparamters for this algorithm
+  - $\alpha$ needs to be tuned
+  - $\beta_1$ common 0.9 (dw) for momentum
+  - $\beta_2$ recommends: 0.999 moving avg $dw^2$
+  - $\epsilon$ recommends $10^{-8}$
+  - recommendations by adam paper team.
+> **ADAM**: Adaptive moment estimation
+
+#### 23 - Learning rate decay
+
+- slowly reduce learning rate overtime
+- algorithm can not converge 
+- by reducing $\alpha$ we come closer to the minimum, by reaching convergence we can take smaller steps
+- 1 epoch: 1 pass throug dataset (1 pass through all mini-batches)
+$$
+\alpha = \frac{1}{1+ decay\_rate * epoch\_num}
+$$
+
+Epoch | $\alpha$
+- | - 
+1 | 0.1
+2 | 0.67
+3 | 0.5 
+4 | 0.4
+
+other learning rate decay methods
+- $\alpha = 0.95 ^{epoch_num} \alpha_0$
+- $\alpha = \frac{k}{\sqrt{epoch_num}} \alpha_0$ or $\frac{k}{\sqrt{t}} \alpha_0$ 
+- discrete staircase
+- manual decay: manually controlling alpha by hand
+
+#### 24 - The problem of local optima
+
+- local optima: function can have multiple local optima, so algorithm can get stucked in one of them
+- most point of gradient = 0 are saddle points, not local minima
+- because we have like 20000 dimensions we will have all 20000 dimensions to be curved like quadratic (having a local optima) at this point
+- chances are quite loooow $2^{-20000}$
+- often its mixed, and we have a saddle point
+- lot of intuition from 2D or 3D not transfer to high-dimensional problems
+- problem of plateaus:
+  - region where derivatives are close to 0 for a long time
+- unlikely to get stuck in a bad local optima
+- plateaus can make learning slow
+  - momentum, RSMprop, adam can help here
