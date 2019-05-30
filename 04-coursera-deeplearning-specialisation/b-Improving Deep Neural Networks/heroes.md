@@ -91,3 +91,45 @@ tipps for beginners of ai
 - book by bengio
 - iclr proceeding papers
 - dont be afraid of maths
+
+## Week 2 - Yuangqing Lin
+
+head of IT-research of chinese government
+
+personal story:
+- good background in maths
+- early 2000 nanotechnology was hot
+- sth even more exciting
+- Dan Lee - machine learning is a great thing
+- five exciting years at UPenn
+- learning new things everyday
+- started with computer vision relatively late
+- first ImageNet competition team building
+- working on Liza, AlexNet
+
+whats happening in this national lab?
+- really large dl platform (biggest in china)
+- deep learning framework
+- really large scale computing ressource
+- big kind of data
+- if you find a interisting technology -> combine with applications like baidu
+- take you some effort for getting code,data
+- in a few seconds you start learning from the papers
+
+ressources from chinese government putting in? 
+- invest in infrastructure
+- national projects
+
+deep learning in china ?
+- booming from search engines, prhase recognition, surveillance,ecommerce
+- start with initial idea, initial data, initial algorithm -> collect data and restart with better idea, better algorithm
+- quick improvement period
+
+enter dl advice:
+- open source frameworks for starters
+- good community, good people
+
+how did you gain understanding?
+- opposite way, pca, lda and all of the foundations
+- we learned graphic model
+- also learn basics
