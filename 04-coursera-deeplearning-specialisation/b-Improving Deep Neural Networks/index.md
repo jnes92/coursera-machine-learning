@@ -464,3 +464,218 @@ other learning rate decay methods
 - unlikely to get stuck in a bad local optima
 - plateaus can make learning slow
   - momentum, RSMprop, adam can help here
+
+## Week 3 - total 5h
+### Hyperparameter tuning
+#### 25 - Tuning process
+
+- lot of hyperparameters needed
+- tips for systematically organize tuning process
+- learning rate $\alpha$, momentum $\beta$, adam ($\beta_1, \beta_2, \epsilon$), # layers, #hidden units, learninr rate decay, mini-batch size
+- most important: $\alpha$, 2nd: $\beta$, hidden units, mini-batch, 3rd: layers, learning rate decay
+- before: grid of 5x5 parameters for small parameter spaces
+- recommend: choose random points
+- reason: not evaluate 5 models, instead with random you really get 25 different models
+- coarse to fine "scheme": mark the best fitting parameters and zoom in to this area and repeat process
+
+#### 26 - Using an appropriate scale 
+
+- $n^{[l]} = 50, ..., 100$ 
+- #layers $L: 2 - 4$ 
+- but for $\alpha  = 0.00001, ... , 1$ its hard to sample, because 90% is used between 0.1 - 1
+- logarithmic scale (0.0001, 0.001, 0.001, 0.1, 1) you get more ressources for the small steps
+- $r= -4 * np.random.rand()$ $\leftarrow r \in [-4,0]$
+- $\alpha =  10^r$
+- get low value to get $a= log_{10} 0.0001 = -4$, $b = log (1) = 0$ 
+- input to $r: [a,b]$
+- for exponentially weighted averages $\beta = 0.9, ... , 0.999$ (avg. of 10, 1000 values)
+- $1- \beta = 10^r \rightarrow \beta = 1-10^r$ with $r \in [-3, -1]$
+
+#### 27 - Hyperparameters tuning in practice: Pandas vs Caviar
+
+- intuitions often dont transfer between domains (nlp, vision, speech, ads, logistics, ...)
+- re evaluate occasionally
+- 2 major ways:
+  - babysitting one model (not enough computing power): adapt learning rate or parameters each day and decide if we can continue to grow lr
+  - training models in parallel: try a lot of hyperparameters and pick the best afterwards
+- also called:
+  - panda approach (just 1-2 child with all the attention)
+  - caviar: fish just lay a lot of eggs, hopefully one of them will do fine
+
+
+### Batch Normalization
+#### 28 - Normalizing activations in a network
+
+- normalizing input can speed up learning, compute means, variance and normalize dataset
+- in a deeper model, we have $X, a^{[1]}, a^{[2]}, ...$
+- question: Can we normalize values of $a^{[2]}$ so as to train $W^{[3]}, b^{[3]}$ faster
+- actually normalize $Z^{[2]}$ (some discussion about to normalize before or after activation function)
+- given some intermediate values in NN $z^{[l](i)}$
+- specific to one layer l, but left out to easier read it.
+
+$$
+\mu = \frac{1}{m} \sum_i z^{(i)}
+$$
+$$
+\sigma^2 = \frac{1}{m} \sum_i (z_i - \mu)^2
+$$
+$$
+z_{norm}^{(i)} = \frac{z^{(i)}- \mu}{ \sqrt{\sigma^2 + \epsilon} }
+$$
+$$
+\tilde{z}^{(i)} = \gamma z_{norm}^{(i)}   + \beta 
+$$
+- $\gamma, \beta$ learnable parameters of model, 
+- IF: $\gamma = \sqrt{\sigma^2 + \epsilon}, \beta = \mu$ it will $z_{norm}^{(i)} = \tilde{z}^{(i)}$
+- use $\tilde{z}^{(i)}$ instead of $z^{(i)}$
+- you dont want values to have mean = 0, variance like input features $X$
+
+#### 29 - Fitting Batch Norm into a NN
+
+- each hidden unit computes z + activation function to compute a
+- $x \rightarrow^{w,b} z^{[i]} \longrightarrow_{BatchNorm(BN)}^{\beta, \gamma} \tilde{z}^{(i)} \rightarrow a^{[i]} = g^{[i]} (\tilde{z}^{(i)} )$ and repeat
+- Parameters from network: $W,b$ + $\beta, \gamma$ for each Layer (not momentum $\beta$) 
+- use optimization algorithm for all of them
+- $\beta^{[l]} = \beta^{[l]} - \alpha d\beta^{[l]}$
+- batch normalize in frameworks is only 1 line: `tf.nn.batch_normalization`
+- batch norm is usually applied while working with mini-batches
+- works the same way, like you would expect
+- 1 detail for params: $W, \sout{b},\beta, \gamma$ during normalization b will be added and substracted (mean substraction step)
+- dimensions of $\beta, \gamma: (n^{[l]},1)$ (like b before)
+
+```
+for t = 1 ... numMiniBatches
+    compute forward_prop on X{t}
+        in each hidden layer use BN to rpleace zL with zTildeL
+    Use backprop to compute dw, (db), dbeta, dgamma of l
+    update parameters w,beta, gamma (with gradient descent, + momentum, rmsprop, adam)
+```
+#### 30 - Why does Batch norm work? 
+
+intuition:
+- makes weights later more robust to changes for earlier layers
+- imagine training with only black cats
+- classifier might not do very well for colored cats
+- data distribution changing "covariant shift"
+- for a hidden layer inside all the inputs change every time (because $a^{[1]}, a^{[2]}$ change depending on the input)
+- mean and variance will remain the same ($\beta^{[2]}, \gamma^{[2]}$)
+- limits the amount of different values from previous layer, become more stable
+
+slight regularization effect:
+- each mini batch is caled by mean/variance computed on just that mini-batch
+- there is some noise in it (because mini batch)
+- similiar to dropout it adds some noise to each hidden layer activations
+- combine with other regularization
+- only works for small mini-batches (noise reduced for big mini-batch size)
+
+#### 31 - Batch Norm at test time
+
+- for test time: $\mu, \sigma^2$ estimate using exponentially weighted average (across mini-btaches)
+- $X{1} -> \mu^{\{1\}[l]}$, ... -> $\mu$ and analog for $\sigma^2$
+- $z_{norm} = \frac{z- \mu}{\sqrt{\sigma^2+\epsilon}}$
+- $\tilde{z} = \gamma z_{norm} + \beta$
+- also called "running average"
+
+### Multi-class classification
+#### 32 - Softmax Regression
+
+- so far we used binary classification (0,1 / cat or non-cat)
+- $C =$ #classes, here: 4
+- $n^{[L]} = C$, here 4
+- first node P(other | x), 2nd node: P(cat|x)
+- $\hat{y} is (4,1)$ 
+- Softmax Layer
+  - Activation function
+  - $t=e^{z^{[l]}}$
+  - $a^{[l]} = \frac{e^{z^{[l]}}}{\sum_{j=i}^4 t_i} = \frac{t_i}{\sum_{j=i}^4 t_i}$
+- summarize $a^{[l]} = g^{[l]} ( z^{[l]} )$
+  - takes vector, output vectors
+- model with softmax, but without hidden layer can seperate data into classes, with linear decision boundary
+
+#### 33 - Training a softmax classifier
+
+- name softmax comes from contrast to "hard max"
+- hard max will just put one 1 to the biggest element, everything else get 0
+- if c=2, softmax reduces to logistic regression, output layer will just have 2 numbers -> redundant, because they sum up to 1.
+- Loss function
+$$
+L (\hat{y},y) = - \sum_{j=1}^C  y_j \log \hat{y}_j
+$$
+- if loss needs to be small, -log y hat 2 needs to be small -> make $\hat{y}_2$ big
+$$
+J (w,b,..) = \frac{1}{m} \sum_i^m L(\hat{y}, y)
+$$
+
+gradient descent with softmax:
+- forward $z^{[l]} = a^{[l]} = \hat{y} \rightarrow L(\hat{y},y)$
+- backprop $dz^{[l]} = \hat{y} - y$
+
+### Introduction to programming frameworks
+#### 34 - Deep learning frameworks
+
+- learned algorithm from scratch to understand how they work
+- as you start large models, its not practical to do so
+- many good frameworks exist that can help you build
+- frameworks:
+  - caffe, caffe2
+  - CNTK
+  - DL4J
+  - Keras
+  - Lasgne
+  - mxnet
+  - PaddlePaddle
+  - TensorFlow
+  - Theano
+  - Torch
+- many frameworks evolve rapidly
+- criteria for choosing dl frameworks
+  - ease of programming (development, deployment)
+  - running speed
+  - truly open (open source + good governance)
+
+#### 35 - Tensorflow
+
+- motivating problem $J(w) = w^2 - 10w + 25 = (w-5)^2$, minimizing would be w=5
+- pretend we dont know this :D 
+- similiar structure can be used for neural networks
+
+```python
+import numpy as np
+import tensorflow as tf
+
+w = tf.Variable(0, dtype=tf.float32)    # Param we want to optimize
+
+# get training data inside TF
+# coefficients = np.array([[1.], [-10.], [25.]])
+# x = tf.placeholder(tf.float32, [3,1]) # 3,1 array
+
+# tf knows how to do derivatives, figures backprop out by itself
+# cost = tf.add( tf.add(w**2, tf.multiply(-10., w)), 25))
+cost = w**2 - 10*w + 25 # overlading +-*/ 
+# cost = x[0][0]*w**2 - x[1][0]*w + x[2][0] # with training data X
+train = tf. train.GradientDescentOptimizier(0.01).minimize(cost)
+
+init = tf.global_variables_initializer()
+session = tf.Session() 
+session.run(init)
+print (session.run(w))
+
+session.run(train)
+# session.run(train, feed_dict={x: coefficients})
+print (session.run(w))
+
+for i in range(1000):
+    session.run(train)
+print (session.run(w))
+```
+
+- only need to define the cost function
+- better for cleanup while errors
+```
+with tf.Session() as session:
+    session.run(init)
+    print(session.run(w))
+```
+- tensorflow constructs a computation graph for the cost function
+- tensorflow already built in backward propagation while constructing computation graph
+- tensor flow documentation computation graph with operatioons $(.)^2$ instead of output $w^2$
