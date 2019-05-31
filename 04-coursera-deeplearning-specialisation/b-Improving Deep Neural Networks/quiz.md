@@ -25,3 +25,15 @@
 8. (1) is GD, 2 is small b, 3 is big b (0.9 is best)
 9. tuning a, adam, mini batch, better initialize
 10. adam **should not** be used with batch gradient descent
+
+## Week 3 - Quiz 3
+1. use random values
+2. some hyperparams are more important (like alpha, beta)
+3. amout of computational power
+4. $beta = 1-10**(-r-1)$ 
+5. false, repeat occasionally
+6. zL
+7. avoid division by 0
+8.  can be learned with all, set mean and variance
+9. perform norm, use exponentaially weighted across mini batches from training
+10. allows to write fewer lines, open source + good governance
