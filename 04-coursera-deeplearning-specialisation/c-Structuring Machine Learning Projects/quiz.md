@@ -24,3 +24,23 @@ X yes, because bias higher than variance
 X or data augmentation 
 X add and shuffle 
 16. two weeks will limit speed, use 10% for experiments, buying pc power
+
+
+## Week 2 - Autonomous driving (case study)
+
+1. start with basic model
+2. false (softmax would be if only 1 output is valid)
+3. 500 images with mistake
+4. false, you can still use it, just dont sum it up if value is missing
+5. 980 + 20 for dev test
+6. avoidable bias of 8.3, data-mismatch
+7. / not enough info?
+X right 
+8. false, use data augmentation
+9. 2.2: maximum improve
+10. capturing subset
+11.  correct in test set, not correct train set
+12.  pre-trained on your dataset
+13.  nothing seems promising
+14.  false, A would be e2e
+15.  large training set
