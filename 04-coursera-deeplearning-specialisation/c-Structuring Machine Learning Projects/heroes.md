@@ -62,3 +62,76 @@ advice for new ai:
 - implement chunks of it by yourself
 - dont abstract, do things from scratch
 - work with frameworks, after you have done it once yourself
+
+## Week 2 - Ruslan Salakhutdinov
+director or apple research
+
+personal story: 
+- started by luck
+- master at toronto
+- first year financial
+- bumped into geoff hinton
+- boltzmann machine constraing divergence
+- really exciting
+- started PhD with Geoff 2005 / 2006
+- deep learning was popping up there
+
+restricted bolzman machines for multiple layers
+- non-linear extension of PCA
+- extend to deal with faces? 
+- can we compress documents?
+- real value, count, binary data testing
+- 6month for good results
+- lot of learning with impressive results
+
+whats happening with boltzmann machines?
+- learn one layer at a time
+- theoretical justification to be able to pre-tain systems
+- since 2009 gpu shown up
+- directly optimizing deep neural networks
+- standard backprop was easy suddenly
+- would have taken month on cpu in 2005
+- big change
+- generative models (boltzmann)
+- learning algorithm marvov, monte carlo is not as scalable as backward propagation
+
+generative unsupervised vs supervised
+- important topic
+- unsupervised, semi-supervised, generative models
+- lot of progress was in supervised learning
+- unsupervised pre training models can help for supervised models
+- look at GAN, deep energy models
+- not figured out: how to do unsupervised learning with some hints, some examples
+
+supervised learning vs other approach, evolved thinking:
+- we should be able to make progress there
+- boltz machines, gans - generative models
+- in it sector: companies have lots of unlabeld data
+- we should be able to, because we have so much of it
+
+enter dl research advice:
+- try different things
+- dont be afraid to try new things
+- lacking theory encourages :D
+- understand deep learning
+- backprop for cnn, you will understand how the system operate
+- how to implement on gpu
+- academic xp and industry
+  
+PhD vs industry:
+- can do amazing research in industry
+- academia: more freedom to work on longterm problems
+- industry is also exciting, because you can impact millions of users
+- industry has more ressources for computations, ... 
+- academicy -> industry: switching
+
+exciting trending areas:
+- deep reinforcement learning 
+  - train agents in virtual worlds
+  - lot of progress here
+  - agents communicate with each other
+- nl understanding
+  - dialogue based system
+  - read text, answer questions intelligently
+- subarea: able to learn from few examples 
+  - one shot learning
