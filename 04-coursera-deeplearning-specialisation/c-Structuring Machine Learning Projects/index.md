@@ -249,3 +249,78 @@ error analyis:
   - use bias / variance analysis & Error analysis to prioritize next steps
 - applies to all disciplines
 
+### Mismatched training and dev/test set
+#### 16 - Training and testing on different distributions
+
+- more and more teams are training on data from diff. distributions
+- imagine cat upload from web in high-res, and from app in low-res
+- maybe 200k from web, but only 10k from app
+- you want to focus on the mobile app (here your users will upload pics)
+- Option 1:
+  - put datasets together 210k images and randomly shuffle
+  - advantage: train dev test will come from same distribution
+  - disadvantage: dev set with e.g. 2,5k will come from web dist
+  - not recommended, dev set target is another dist like you really care for
+- Option 2:
+  - train with all 200k from web + 5k from app
+  - dev / test set: all app images
+  - train dist is different to dev/test dist
+  - better performance over long term
+
+speech recognition example: (real: rearview mirror)
+- training: from other speech recognition data (purchase? X,y), or from smart speaker, e.g. 500k 
+- dev/test: speech activated rearview mirror: 20k
+- do: Train 500k, D: 10k, T: 10k
+- or: Train 510k, D: 5k, T: 5k
+
+#### 17 - Bias and variance with mismatched data distributions
+
+- assume cat classification, get $\approx 0$ % error
+- example: train 1%, dev 10% error
+- if dataset are from same dist: high variance problem
+- if dataset are from **diff** dist: you cant be sure.
+- because you change 2 things at one time (distribution, data)
+- New set for this: Training-Dev set: same distribution as training, but not used for training
+  - before: train / dev / test
+  - after: randomly shuffle train, extract 1 piece : train-dev set (same dist)
+  - but you only train with train set (not train-dev)
+  - for error analysis: repeat for train-dev. dev, test sets
+- so now we get
+  - Train error: 1%
+  - train-dev: 9%
+  - dev : 10%
+  - so now you can see, you have a high variance problem (1% vs 9%), not generalizing well
+- other example:
+  - train 1%
+  - train-dev: 1.5%
+  - dev : 10%
+  - pretty low variance, but **data-mismatch** problem.
+  - learning was not explicitely learning for the other data distribution
+- differences:
+  - human level - training set error : avoidable bias
+  - training - train-dev : variance
+  - train-dev -> dev : data-mismatch
+  - dev -> test: degree of overfitting to dev set
+- differences dont always need to grow.
+- errors are 2 dimensional (X dataset, Y errors)
+  - vertical: avoidable bias, variance
+  - horizontal: data - mismatch
+
+#### 18 - Addressing data mismatch
+
+- what to do, when you have data mismatch
+- no systematically way
+- manual error analysis to try to understand
+- make training data more similiar - collect more data similiar to dev/test set
+- maybe use articial data synthesis: use clean audio + add noise for in-car audio
+- take care if you have really few noises, it could overfit the noise, synthesized may sound the same
+- take care if you synthesize a small part of the superset
+- videogame has sth like 20 cars, but real worlds has LOTS more
+
+### Learning from multiple tasks
+#### 19 - Transfer learning
+#### 20 - Mutli-task learning
+
+### End-to-end deep Learning
+#### 21 - What is end-to-end Deep Learning
+#### 22 - Whether to use end-to-end deep learning
