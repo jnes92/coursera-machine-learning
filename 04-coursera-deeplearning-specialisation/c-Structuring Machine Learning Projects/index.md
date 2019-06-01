@@ -353,3 +353,57 @@ speech recognition example: (real: rearview mirror)
   - usually: amout of data for each task is quite similiar
   - can train a big enough nn to do well on all tasks
 - transfer learning is more often used than multi-task learning
+
+### End-to-end deep Learning
+#### 21 - What is end-to-end Deep Learning
+
+- learning system with multiple stages
+- replace all stages with 1 single neural network
+- speech regonition example, Map audio X, to transcript Y
+- e.g. pipeline use MFCC to extract features, use ML to extract Phonemes -> form words -> form transcript
+- train huge nn with audio X -> transcript
+- bypassing lot of intermediate steps, obsoloted many years of research
+- a lot of data is needed (3000h pipeline is better, >10k hours e2e approach is better)
+- face recognition for entry access (often used in china)
+  - X : image, identity Y mapping is not a good approach
+  - multi step approach: Face Detector -> zoom + crop -> NN -> identity
+  - breaking problem into seperate steps, 2 learning alg which simpler tasks - better performance
+  - actually nn takes 2 images and outputs if its the same person
+- why is 2 step approach better
+  - 2 simpler problems
+  - lot of data for each of 2 subtasks
+  - in contrast: both tasks at same time much less data
+- machine translation
+  - used to long pipeline: english -> text analaysis -> ... -> french
+  - English -> French 
+  - because we have large dataset of english to french
+  - e2e works well
+- estimating childs age:
+  - non e2e: image -> bones -> ... -> LUT bone length -> age
+  - e2e: image -> age, lot of data needed
+  - not enough data currently
+  - seperation is better
+
+#### 22 - Whether to use end-to-end deep learning
+
+Pros:
+- let data speak
+- less hand designing of components needed
+
+Cons:
+- may need large amout of data
+- exclude potentially useful hand-designed components
+- two main knowledges: Data & hand-design, double edged-sword (helps for small dataset, can harm for large dataset)
+
+key question:
+- do you have sufficient data to learn of function of complexity needed to map x->y??
+
+example autonomous driving:
+- pipeline example:
+  - image, radar
+  - get cars & pedestrian
+  - plan route / path
+  - execute plan by commands to steering
+- end: done in motion planning, other control algorithm to make decisions
+- DL for detection of cars and pedestrians
+- careful choose X-Y for components
