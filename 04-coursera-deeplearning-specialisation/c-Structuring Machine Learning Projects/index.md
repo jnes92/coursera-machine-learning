@@ -199,3 +199,53 @@ error analysis example
   - regularization (L2, dropout, data augmentation)
   - NN architecture, hyperparameter search
 
+## Week 2
+### Error Analysis
+#### 13 - Carrying out error analysis
+
+- imagine 90% accuracy, 10% error
+- proposal: improve specifically for error with systems
+- should you try make your cat classifier better at dogs ?
+
+error analyis:
+- get 100 mislabeled dev set examples
+- count up how many are dogs
+  - 5/100: dogs -> error just will be reduced to 9.5% 
+  - 50/100: dogs -> error would be reduced to 5% (half error could be worth it)
+- can evaluate one or multiple ideas
+- create spreadsheets with ideas as columns, then count percentage
+- estimation of worthwhile ideas
+
+#### 14 - Cleaning up incorrectly labeled data
+
+- incorrecly label (coming from data)
+- mislabeleld label (coming from model)
+- what to do? in training set:
+  - robust to random errors in training set, if errors are reasonable random
+  - systematic errors are a problem (all blacks: cats, white: not cat)
+- what to do? in dev set? 
+  - add incorreclty labeled to error analysis
+  - depending on your other cases, e.g. 0.6 of 2% are because incorrect labels -> would be worth it 
+  - dev set wants to help you between two classifiers A (2.1%) B (1.9%) 
+- apply same process on dev / test set to make sure they come from the same distribution
+- examine examples your algorithm got **right** as well it got **wrong**
+  - consider but would take a long time
+- train and dev/test data may now come from **slightly different** distributions
+
+#### 15 - Build your first system quickly, then iterate
+
+- advice: build quickly, then iterate
+- speech recognition example
+  - noisy background (cafe, car)
+  - accented speech
+  - far from mic
+  - young children speech
+  - stuttering
+  - ...
+- difficult to pick one, without spending too much time
+- ml receipt:
+  - setup dev/test set and metric
+  - build initial system quickly (some learned system allows to prioritize)
+  - use bias / variance analysis & Error analysis to prioritize next steps
+- applies to all disciplines
+
