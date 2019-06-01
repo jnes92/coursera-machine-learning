@@ -319,8 +319,37 @@ speech recognition example: (real: rearview mirror)
 
 ### Learning from multiple tasks
 #### 19 - Transfer learning
+
+- transfer learning 
+- example cat -> radiology diagnoiss
+- just leave out last layer and replace it with radiology
+- swap in new dataset with radiology images, diagnosis
+- initialize last layers weight randomly, retrain with new data
+- maybe you can retrain the other layers too (depending on dataset)
+- pre-training: weights from previous model for initializing weights
+- fine-tuning: retraining with new dataset
+- low-level features (lines, dots, ... same for all cv) might help your model
+- when does transfer learning make sense?
+  - have lot of data from where you transfer from
+  - much less data for new problem
+  - would not make sense the other way around (100 examples from old problem, 10k for new problem)
+- Transfer from A-B:
+  - A,B have same input x
+  - lot more data for A than B
+  - low level features from A could be helpful for learning B
+
 #### 20 - Mutli-task learning
 
-### End-to-end deep Learning
-#### 21 - What is end-to-end Deep Learning
-#### 22 - Whether to use end-to-end deep learning
+- instead of sequentially do transfer learning
+- you can also try to learn simultanousely
+- simple autonomous driving example
+- detect pedestrians, cars, stop signs, traffic lights (4,1)
+- not like softmax: 1 image can have multiple labels (instead of XOR)
+- you are trying to solve multiple problems at once
+- you could also train 4 seperate networks
+- if some earlier layers can help the others -> 1 for all is better, than seperately
+- when does multi-task learning make sense?
+  - training on a set of tasks that could benefit from having shared lower-level features
+  - usually: amout of data for each task is quite similiar
+  - can train a big enough nn to do well on all tasks
+- transfer learning is more often used than multi-task learning
