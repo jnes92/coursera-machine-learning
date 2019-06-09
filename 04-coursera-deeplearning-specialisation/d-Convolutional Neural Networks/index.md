@@ -227,3 +227,240 @@ advantages:
 - **parameter sharing**: feature detector for one part of an image is useful for other parts of the image
 - **sparsity of connections**: output value depends only on a small number of inputs
 - translation invariance: can detect cats wherever it is 
+
+## Week 2 
+### Case Studies
+#### 12 - Why look at case studies?
+
+- best way to get intuition by seeing good examples
+- architecture works well on one problem, mostly be good in other problems
+- Classic Networks : LeNet-5, AlexNet, VGG
+- ResNet (up to 152 layer network with nice tricks)
+- Inception
+- ideas could be useful for own problems
+
+#### 13 - Classic Networks
+
+**LeNet-5:**
+- recognize handwritten image (grayscale 32x32x1)
+- conv layer 6 filter 5x5, s=1 -> reduces to 28x28x6
+- (classical: avg, modern: max) pooling f=2, s=2 -> 14x14x6
+- conv layer 5x5, s=1 -> 10x10x16 (back then no padding was used)
+- avg pool f=2, s=2 -> 5x5x16 (400 unit)
+- fc layer 400 -> 120 Neurons
+- fc layer 120 -> 84
+- final output $\hat{y}$
+- has 60k parameters 
+- $n_H, n_W \downarrow$, $n_c \uparrow$
+- pattern in arrangement: conv pool, conv pool, fc fc, output
+
+**AlexNet:**
+- Alex Krizhevsky 2012
+- input 227x227x3 (in paper: 224x224x3)
+- conv:96 filters 55x55, s=4  -> 55x55x96
+- max pool: 3x3, s= 2 -> 27x27x96
+- conv: 5x5 same -> 27x27x256
+- max pool: 3x3, s= 2 -> 13x13x256
+- conv 3x3 same
+- conv 3x3 same
+- conv 3x3 same
+- max pool 3x3, s=2 -> 6x6x256
+- fc 9216
+- fc 4096
+- fc 4096
+- softmax 1000
+- similiar to LeNet, but **much** bigger
+- around 60 Mio parameters
+- good paper to start reading papers, easy to follow
+
+**VGG-16**
+- Simonyan & Zisserman 2015, 2015
+- simpler network with just 
+  - conv=3x3, s=1, same 
+  - maxpool 2x2, s=2
+- input: 224x224x3 -> 2x CONV with 64 filter [CONV 64] x2 -> 224x224x64
+- pool layer -> 112x112x64
+- [CONV 128] x2 (128 filters, 2 conv layers) -> 112x112x128
+- pool -> 56y56x128
+- [CONV 256] x3 -> 56x56x256
+- pool, conv, pool, conv, pool again
+- fc 4096, fc 4096, softmax 1000
+- 138 M parameters (pretty large network)
+- filters double after each step 64-128-256-512
+
+
+#### 14 - ResNets
+
+- build of residual blocks
+- $a^{[l]}$ -> Linear -> ReLu (get $a^{[l+1]}$) -> Linear -> ReLu 
+- $z^{[l+1]} = W ^{[l+1]} a^{[l]} + b^{[l+1]}$
+- $a^{[l+1]} = g(z^{[l+1]})$ ...
+- change main path for short cut / skip connection
+- $a^{[l+2]} = g(z^{[l+2]} + a^{[l]})$
+- passes information deeper in the network
+- allows training of deeper networks
+- stack residual blocks to form a resnet
+- Residual Network: take plain network, add shortcuts for every 2 layers
+- for plain networks: error_rate is increasing if layers increased at some time
+- in theory: should be going down while adding layers
+- for ResNet: error rate is constantly decreasing (> 100 layers, > 1000 layer)
+
+#### 15 - Why ResNets Work
+
+- if wl+2 = 0, $a^{[l+2]} \Rightarrow a^{[l]}$
+- identity function is easy to learn, so will not hurt permance
+- for deep plain networks: deeper and deeper gets more difficult to be able to learn identity function -> will make performance worse
+- take 34 plain network and add skipped connection to get ResNet-34
+
+#### 16 - Networks in Networks and 1x1 Convolutions
+
+- 1x1 filter with just one number, e.g. 2
+- take 6x6x1 input -> multiply with 1x1 filter
+- seems not useful
+- take 6x6x32, 1x1x32 filter = 6x6x#filter
+- take element wise product for each layer, single real number
+- like a fc nn applies to each of layer, 32 inputs -> output # filters
+- can do non trivial computations
+- 1x1 conv, or called *Network in Network*
+
+- imagine 28x28x192 -> how to shrink to 28x28x32? 
+- 1x1x192 with 32 filters conv 1x1
+- also adds non linearity
+- useful for building *inception network*
+
+#### 17 - Inception Network Motivation
+
+- 1x3 filter or 3x3 or 5x5 or pooling layer? 
+- just add them all ?!
+- input: 28x28x192
+  - parallel:
+  - 1x1 with 64 filter -> 28x28x64 output
+  - 3x3 same -> 28x28x128
+  - 5x5 same -> 28x28x32
+  - max pool  with padding to match dimensions
+- stack all the outputs together
+- inception module output: 28x28x256
+- heart of inception network by Szegedy (2014)
+- you dont need to pick filter sizes, do them all, let network learn what to use
+- problem: computation costs
+
+eg. focus on 5x5 filter 
+- 28x28x192 -> Conv 5x5, same, 32 -> 28x28x32 output
+- 32 filters: each filter is 5x5x192
+- compute 28x28x32 * 5x5*192 multiplications = **120M**
+
+alternative using 1x1 conv
+- 28x28x192 -> CONV 1x1, 16 -> Output 28x28x16
+- add conv 5x5, 32 -> 28x28x32
+- shrunk to intermediate volume with 16 channels *bottleneck layer*
+- compute cost:
+  - 1st layer: 1x1x196 * 28*28x16 filters = 2.4M
+  - 2nd layer: 28x28x32 * 5x5x16 = 10.0 M
+  - total: 12.4 M 
+- compared to 120M -> 12.4M 
+- number of additions is similiar to multiplications
+
+#### 18 - Inception Network
+
+- inception module: inputs previous activation, compute in parallel
+  - 1x1 CONV -> 5x5 CONV -> 28x28x128 output
+  - 1x1 CONV -> 3x3 CONV -> 28x28x32 output
+  - 1x1 CONV 
+  - MAXPOOL 3x3, same -> 1x1 CONV to shrink channels from 192-> e.g. 32
+- channel concat: 64+ 128 + 32 + 32 = 28x28x256 output
+
+inception network:
+- puts a lot of inception modules together
+- additional side branches added
+- takes hidden layer, fc, fc, softmax to try to predict output in the end
+
+fun facts:
+- invented by Google, called "GooLeNet"
+- inception meme: we need to go deeper
+- meme as motiviatino for building deeper neural networks... :D 
+
+### Practical advices for using ConvNets
+
+#### 19 - Using Open-Source Implementation
+
+- lot of researcher open source their work on GitHub
+- rest is like a GitHub clone tutorial. :'D
+
+#### 20 - Transfer Learning
+
+- lots of dataset: ImageNet, MS COCO, Pascal types
+- training takes several weeks and multiple gpu
+- download open-source weights and use that as initilization
+- e.g. cat classifier: "Tigger", "Misty", "Neither"
+- training set is rather small for 2 cats
+- download open-source network + weights from ImageNet with 1000 classses
+- remove softmax with 1000 output -> replace with softmax 3 (Tigger, Misty, none)
+- freeze parameters in all layers before softmax
+- just train softmax layer
+- might get good performance directly
+- depending on framework: trainableParameters = 0 or freeze=1 to specify training for layers
+- because all parameters are frocen the function is fixed, so you can precompute the last layer and save them to disk
+- use the fixed function and compute feature vector for it
+
+for larger dataset:
+- freeze fewer layers and train the later layers, or replace later layers
+- more data -> less frozen layers
+
+for lot of data:
+- just take whole thing as initiliaztion (replace random init)
+- take all layers and train, replace softmax like before
+
+> transfer learning should be likely to be done everytime
+
+
+#### 21 - Data Augmentation
+
+- for cv: more data will help almost alwasys
+
+common augmentation:
+- mirroring (horizontal)
+- random cropping (not perfect, because some crops are not recognizable)
+- rotation, shearing, local warping, ...
+
+color shifting:
+- add distortions to color channels
+- for different light (sun, inside, outside, eary / late)
+- advanced: PCA, see AlexNet paper - PCA Color augmentation, keeps overall color same
+
+distortions during training
+- data saved on harddisk
+- cpu-thread 1a: loads image from hd to a stream
+- cpu-thread 1b: applying distortion to mini-batch of data
+- other process: training on cpu/ gpu
+- can be run in parallel
+
+#### 22 - State of Computer Vision
+
+**data vs hand engineering:**
+- spectrum between little data - lots of data
+- speech recognition : decent data (like 7/10)
+- image recognition: much data, but more useful (5/10)
+- object detection: rather small data (2/10)
+- for more data: simpler algorithm, less hand-engineering
+- in contrast: more hand-engineering ("hacks")
+- algorithm has 2 sources of knowledge:
+  - labeled data
+  - hand engineered features / network architecture / other components
+- transfer learning is helpful in most cases
+
+**tips for benchmarks/competitions:**
+- most are not used for production
+- ensembling:
+  - train several networks independently and average their outputs
+  - 3-15 networks
+  - 1-2% better
+- multi-crop at test time
+  - run classifier on multiple versions of test images and average results
+  - 10-crop: 1 central + 4 sides + mirrored 1 central + 4 sides mirror
+  - could also be used for production, but not so common 
+
+**use open source code**
+- use architecture published in literature
+- start with some other architecture
+- use open source implementation if possible
+- use pre-trained models and fine-tune on your dataset
