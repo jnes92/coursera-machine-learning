@@ -11,3 +11,18 @@
 8. false 
 9. reduces params, allows to be used locations, shared for other tasks?? 
 10. depend on only small number from prev. layer
+
+# Week 2 - Deep convolutional models
+
+1. nh,nw decrease, nc increase
+2. multi conv - followed pool, fc in last few layers
+3. false
+4. plain: false
+5. al and 0 ??
+6. **WRONG**
+X L^2, skip to identity mapping
+X easy to learn identity mapping, computes non-linear
+7. 16+1 = 17
+8. 1x1 conv: reduce nc, not nh,nw + pooling reduce nh,nw not nc
+9. use 1x1 conv before, single block allows combination
+10. get implementation, parameters useful
