@@ -26,3 +26,16 @@ X easy to learn identity mapping, computes non-linear
 8. 1x1 conv: reduce nc, not nh,nw + pooling reduce nh,nw not nc
 9. use 1x1 conv before, single block allows combination
 10. get implementation, parameters useful
+
+# Week 3 - Detection Algorithm
+
+1. y = 1, 0.3 , 0.7 , 0.3, 0.3, 0,1,0
+2. y= 0, ??????????
+3. logistic unit, bx, by
+4. 2N 
+5. false
+6. false
+7. true
+8. 1/9
+9. 5
+10. 19x19x(5x25), with 5 anchor boxes: 25 = found sth, box, classes
