@@ -464,3 +464,147 @@ distortions during training
 - start with some other architecture
 - use open source implementation if possible
 - use pre-trained models and fine-tune on your dataset
+
+## Week 3 
+### Detection algorithms
+
+#### 23 - Object localization
+
+- classification with localization
+- drawing bounding box of objects, e.g. Where is the car? 
+- multiple cars in a picture, detect all
+- maybe pedestrians, motorcycles and other objects
+- classification + localization: 1 object
+- detection: Multiple objects
+
+classification with localization:
+- ConvNet -> SoftMax -> predicted class
+- e.g. classes: pedestrian, car, motorcycle, background
+- add more output units for bounding box $b_x,by_,b_h,b_w$
+- convention: upper left is (0,0) bottom right is (1,1)
+- target label: $b_x,by_,b_h,b_w$, class labels (1-4)
+- $y =$ 
+  - Pc: is there an object
+  - $b_x,by_,b_h,b_w$ 
+  - $c_1, c_2, c_3$
+- for non objects: [0, ??????] *dont care* for the rest
+- Loss
+  - if $y_1=1$: $L(\hat{y}, y)$  squared error with all **8 components**
+  - if y=0: $L(\hat{y}, y) = (\hat{y}_1 - y_1)^2$
+
+#### 24 - Landmark detection
+
+- more general case, just output X,Y coordinates
+- or for multiple Landmarks $l_{1x}, l_{1y}, ...$
+- or for shapes up to 64 landmarks
+- detect landmarks is key building for AR fun, or warp effects
+- key position for humans: like elbows, wrist, head, to recognize poses
+- labels have to be consistent
+
+#### 25 - Object detection
+
+- train convnet with extreme cropped cars
+- sliding windows detection: pick window size, input region to convnet to predict
+- keep sliding window until you processed image
+- repeat with larger window, and repeat
+- disadvantage: computational cost
+- before: ml algorithm for car classification was quite low cost, but now its not suitable to do with ConvNets all the time
+
+#### 26 - Convolutional implementation of sliding windows
+
+turning fc layer into conv layers:
+- replace first fc with 5x5 filter (400x) (filter is 5x5x16, but repeated 400 times)
+- keeps being a fully connected layer 
+- replace 2nd fc with 1x1 conv filter (400x) 
+- add 1x1 conv (4x) for outputs
+
+conv implementation of sliding windows:
+- by Sermanet, 2014, OverFeat: Integrated recognition, localization and detection using ConvNets
+- allows sharing of computation
+- with learned 14x14x3, train image: 16x16x3 after max pool and fc you get 2x2x400 (vs. 1x1x400), and for result: 2x2x4 (vs 1x1x4)
+- gives you results for all parts of the image upper left -> is just original image, regions add up
+- combines all regions into 1 forward propagation
+- with image: 28x28x3 you will end up with 8x8x4: gives all output of the different regions
+
+#### 27 - Bounding Box 
+
+- output of sliding windows: not most accurate
+- YOLO, 2015: You only look once
+- basic idea: take classifier and apply to the 3x3 = 9 grids
+- for each grid cell, specify Label y with the 8 dimensions for $P_c, b_x,b_y,b_h,b_w, c_1, c_2, c_3$
+- yolo takes mid point of objects and assigns it to corresponding cell
+- Target output will be 3x3x8 (cells x output dimension y)
+- advantage bounding box will be precise
+- will work if you have only one object per cell
+- in practice the grid will be lot finer: 19x19
+- lot like classification with localization
+- precise boundaries with any form
+- 1 single convolutional implementation
+- works for real time object detection
+
+specify bounding boxes:
+- yolo will do new coordinates for each cell 
+- (top left: 0,0, bottom-right 1,1)
+- $b_x, b_y$ is between 0,1
+- but height width could be greater than 1, has to be greater than 0
+
+#### 28 - Intersection Over Union
+
+- used for evaluation, but also as a component for object detection
+- intersection over union (IoU)
+- intersection computes section that is contained in both
+- union section contained in either box
+- correct if IoU $\geq$ 0.5 (human chosen convention)
+- more generally IoU measures the overlap between two bounding boxes
+
+#### 29 - Non-max suppression
+
+- object might be detected multiple times
+- non max suppression is used to avoid this
+- place 19x19 grid
+- in practice many grid cells could think we´ve got a car here
+- cleans duplicated detections with lower propabilty
+- surpress bounding boxes with high IoU
+
+non-max suppression algorithm:
+- discard all boxes with pc $\leq$ 0.6
+- while remaining boxes
+  - pick largest $p_c$ as prediction
+  - discard any remaining box with IoU $\geq$ 0.5 with the box output
+
+#### 30 - Anchor Boxes
+
+- what if a grid cell wants to detect multiple objects?
+- repeat anchor box 1,2 for output y
+- before output: 
+  - 3x3x8
+  - each object is assigned to grid cell that contains middle point
+- anchor box:
+  - object is assgned to grid cell that contains middle point and anchor box for the grid cell with highest IoU
+  - grid cell, anchor box
+  - output 3x3x16 (or 3x3x (2x8) ) 2 boxes 8
+- wont handle 
+  - 3 objects with 2 anchor boxes
+  - or 2 objects with same anchor box
+- advanced: K-means clustering for choosing anchor boxes
+
+#### 31 - YOLO Algorithm
+
+training:
+- suppose 3 classes (pedestrians, car, motorcycles)
+- 2 anchor boxes: y is 3x3x2x8 (5 + #classes) = 3x3x16
+- form target y´s for each cell
+- remove low probability predictions
+- do non-max suppression
+
+#### 32 - (Optional) Region Proposals
+
+- R-CNN (Regions with CNN), 2013
+- pick just a few regions that make sense do cnn here
+- segmentation algorithm: find special blobs and run classifier there
+- much smaller number of positions, instead of doing all
+- is quite slow
+
+faster algortihms
+- 2015: Fast R-CNN: propose regions, but convolutional implementation of sliding windows
+- 2016: Faster R-CNN: Use ConvNet to propose regions
