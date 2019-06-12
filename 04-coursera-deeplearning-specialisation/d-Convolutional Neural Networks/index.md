@@ -608,3 +608,99 @@ training:
 faster algortihms
 - 2015: Fast R-CNN: propose regions, but convolutional implementation of sliding windows
 - 2016: Faster R-CNN: Use ConvNet to propose regions
+
+
+## Week 4 
+### Face Recognition
+#### 33 - What is face recognition?
+
+demo for face recognition
+- by baidu
+- instead of rfid chip they will login the user
+- liveness detection recognizes pictures != human
+
+face verification vs face recognition
+- verify: 1to1 problem input image, output image = person
+- recognition: K persons, get image, output ID if image is any of the K persons (or none)
+  - e.g. for K=100, you want 99.9% accuracy
+- is a one shot learning problem
+
+#### 34 - One Shot Learning
+
+- one challenge is the one shot learning problem
+- recognize a single person by just 1 example
+- historically its bad if you only have 1 image
+- approach 1: image -> CNN -> output for each person +1 for none
+  - works not good, because training set is so small
+  - what if new person joins ? retrain everytime? 
+- learn a "similarity" function
+  - d(img1,img2) = degree of difference between images
+  - if d(img1,img2) $\leq \tau$ -> same, else its "different"
+- compare input with all inside database and see differences
+  - solves new ppl, because database is just increased
+
+#### 35 - Siamese Network 
+
+- siamese network, by Taigman et. al. 2014
+- focus on last fc with e.g. 128 numbers
+  - will be called $f(x^{(i)})$: encoding of $x^{(i)}$
+- feed second picture to the same network, get encoding : $f(x^{(2)})$
+- define image d(x1,x2) = $|| f(x^{(1)}) - f(x^{(2)}) ||_2^2$
+-goal: 
+  - parameters of nn define an encoding $f(x^{(i)})$
+  - learn parameters so that 
+    - if same person: distance is small
+    - if different person: distance is large
+
+#### 36 - Triplet Loss
+
+- you need to compare pairs of image
+- first image is called "anchor" image, second is an example: positive, negative
+- triplet loss, because you will look at three different images 
+  - Anchor A
+  - Positive P
+  - Negative N
+- want $|| f(A) - f(P) ||^2  \leq ||f(a) - f(N)||^2$
+- $| f(A) - f(P) ||^2 - | f(A) - f(N) ||^2 + \alpha \leq  0$
+- but you want to prevent the nn to just output 0 for all
+- modify object to be smaller than $0 - \alpha$ (margin)
+
+Loss function
+- given 3 images A,P,N:
+$$
+L (A,P,N) = max (|| f(A) - f(P) ||^2 - || f(A) - f(N) ||^2 + \alpha, 0)
+$$
+$$
+J = \sum_{i=1}^m L(A,P,N)
+$$
+- Training set: 10k pictures of 1k persons
+  - you need multiple images for each person (like 10 on average)
+  - for production: 1 image with one-shot is enough, but not inside training
+  
+Choosing triplets A,P,N:
+- if A,P,N are chosen randomly the constraint is easily satisfied
+- nn wont learn much
+- choose triplets that are *hard* to train on
+- $d(A,P) \approx d(A,N)$
+- increases computational efficiency
+- see PapeR: Schroff 2015, FaceNet: *a unified embedding for face recognition and clustering*
+- for modern commercial standard is between 10M - 100M images.
+  - some companies shared their weights :)
+
+#### 37 - Face Verification and Binary classification
+
+- another way to learn similiarity function
+- take 2 parallel cnn and get 2 fc unit outputs
+- connect them to logistic regression unit (0,1)
+- $\hat{y} = \sigma( \sum_{K=1}^128 w_i *| f(x^{(i)})_K - f(x^{(j)})_K  | +b )$
+- few other variations Kai^2 sim: $\frac{ f(x^{(i)})_K - f(x^{(j)^2}}{ f(x^{(i)})_K + f(x^{(j)}}$
+- deployment tip: instead of computing last layer each time, **precompute** the last layer for all stored images and just use new image.
+- will just use pairs of image with target image 1 for same, and 0 for different
+
+### Neural Style Transfer
+#### 38 - What is neural style transfeR?
+#### 39 -  What are deep ConvNets learning
+#### 40 - Cost function
+#### 41 - Content Cost Function
+#### 42 - Style Cost Function
+#### 43 - 1D and 3D Generalizations
