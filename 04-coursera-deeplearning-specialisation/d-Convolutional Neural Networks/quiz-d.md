@@ -39,3 +39,16 @@ X easy to learn identity mapping, computes non-linear
 8. 1/9
 9. 5
 10. 19x19x(5x25), with 5 anchor boxes: 25 = found sth, box, classes
+
+# Week 4 - Neural Style Transfer
+
+1. true
+2. oneshot, recognize with single image
+3. false
+4. fa -fp - fa-fn + a,0 
+5. true
+6. true, complex figures like cats will be most likely in the deeper layer
+7. false
+8. true
+9. pixel values G
+10. 30x30x32
