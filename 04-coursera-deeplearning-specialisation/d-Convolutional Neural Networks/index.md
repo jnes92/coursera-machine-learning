@@ -698,9 +698,81 @@ Choosing triplets A,P,N:
 - will just use pairs of image with target image 1 for same, and 0 for different
 
 ### Neural Style Transfer
-#### 38 - What is neural style transfeR?
+#### 38 - What is neural style transfer?
+
+- generate your own artwork with nn
+- take content + style image -> convert content to styled image
+  - Content: C, Style: S
+  - Generated Image: G
+
 #### 39 -  What are deep ConvNets learning
+
+- see Paper *Visualizing and understanding convolutional networks* by Zeiler and Fergus, 2013
+- to visualize for layer1 check image patches that maximaze unit activations
+- repeat for other hidden units
+- layer 2 can detect shapes or patterns
+- layer 3 can maybe detect people, texture shapes - getting more complex
+- layer 4 can do dogs, legs of birds, water 
+- layer 5 can do various dogs, text or flowers
+
 #### 40 - Cost function
+
+- $J_{content}(C,G)$ : how similiar are C,G
+- $J_{style}(S,G)$: how similiar is style 
+
+$$
+J(G) = \alpha J_{content}(C,G) +\beta J_{style}(S,G)
+$$
+
+1. Initiate G randomly, e.g. (100x100x3)
+2. Use gradient descent to minimize $J(G)$
+
+- see Paper: *A neural algorithm of artistic style*, by Gatys et. al. 2015
+
 #### 41 - Content Cost Function
+
+$$
+J(G) = \alpha J_{content}(C,G) +\beta J_{style}(S,G)
+$$
+- say you use hidden layer l to compute content cost
+- $l$ will not be too deep, or too shallow
+- use pre-trained ConvNet you want to measure how similiar they are in content
+- let $a^{[l](C)}$ and $a^{[l](G)}$ are similiar, both images have simliar content (element-wise difference, squared)
+
+$$
+J_{content}(C,G) = \frac{1}{2} || a^{[l](C)} - a^{[l](G)}  ||^2  
+$$
+
 #### 42 - Style Cost Function
+
+- say you use hidden layer $l$ to measure *style*
+- define Style: correlation between activiations across channels
+  - measure how often some features occur and occur together with other features or not
+  - measure degree of all channels
+- Style matrix will measure all of them
+  - $a^{[l]}_{i,j,k}$ : activiation at (height: i, width: j, channel: k). $G^{[l]}$ is $n_c^{[l]}$ x $n_c^{[l]}$
+  - $G^{[l](S)}_{kk'} = \sum_i \sum_j a^{[l](S)}_{i,j,k} a^{[l](S)}_{i,j,k'}$
+  - $G^{[l](G)}_{kk'} = \sum_i \sum_j a^{[l](G)}_{i,j,k} a^{[l](G)}_{i,j,k'}$
+  - (S) : Style image, (G):enerated Image
+$$
+J_{style}^{[l]}(S,G) = || G^{[l](S)} - G^{[l](G)}  ||_F^2 
+$$
+- F: Frobenius Norm
+
+$$
+J_{style}^{[l]}(S,G) = \frac{1}{(2 n_H^{[l]} n_W^{[l]} n_C^{[l])^2})} \sum_k \sum_{k'} ( G^{[l](S)}_{kk'} - G^{[l](G)}_{kk'} )
+$$
+
+- you get a better result if you use multiple layers 
+
+$$
+J_{style}(S,G) =  \sum_l \lambda^{[l]} J_{style}^{[l]}(S,G)
+$$
+
 #### 43 - 1D and 3D Generalizations
+
+- convolution can be also used for 1D (e.g. time-series like EKG)
+  - 14 dimensions convolved with 5 dim filter = 10 dim output
+  - all ideas apply also to 1D 
+- for 3d volume * 3d filter
+  - 14x14x14 * 5x5x5 filter => 10x10x10 output
