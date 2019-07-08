@@ -10,3 +10,16 @@
 8.  betty, similiar to 0
 9.  $\Theta_u $ , $1-\Theta_u$
 10. unidirectional, depends only on x1 to x<t>
+
+# Week 2 - Natural Language Processing & Word Embeddings 
+
+1. false
+2. non-linear dimensionality reduction
+3. true
+4. $boy-girl \approx brother-sister$, $boy-brother\approx girl-sister$
+5. computationally wasteful
+6. true
+7. c,t nearby
+8. 500 dims, adam optimizer
+9. random init, xij number of times appears, weighting function f0 = 0
+10. m1 >> m2
