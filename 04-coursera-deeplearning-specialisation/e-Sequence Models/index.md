@@ -249,3 +249,175 @@ $$ \tilde{y}^{<t>} = g ( Wy [ \leftarrow_{a}, \rightarrow_a ] + b_y) $$
 - e.g. $a^{[2]<3>} =  g( W_a^{[2]} [a^{[2]<2>}, a^{[1]<3>} +b_a^{[2]})$
 - deep RNN are computational expensive
 - 3 deep recurrent layers is common
+
+
+## Week 2 - Natural Language Processing & Word Embeddings
+
+### Introduction to Word Embeddings
+
+#### 13 - Word Representation
+
+- way of representing words
+- allows smaller training set
+- reduce bias this week
+
+Word representation:
+- V = [a,aaron, .... , <EOS>], $|v| = 10k$ - One Hot Encoding
+- featurized representation for words: (e.g. Man, Woman, King, Queen, Apple Orange)
+  - Gender : -1, 1, -0.9, 0.9, 0, 0.01
+  - Royal: 0.01, 0.02, 0.93, 0.95, ...
+  - Age: 
+  - Food: 
+  - etc..
+- man in vocubalary index: 5391 -> $e_{5391}$
+- so we can figure out apple, orange are more similiar than apple and king 
+- 300D feature space can be visualized to 2d map with: t-SNE
+
+#### 14 - Using word embeddings
+
+named entity recognition example:
+- transfer learning possible from huge amount of texts (freely available on the internet)
+- learn word embeddings from large text corpus / download pre-trained embedding online
+- transfer embedding to new task with smaller training set
+- optional: continue to finetune the word embeddings with new data
+
+relation to face encoding:
+- siamese network architecture
+- compares encoding of face
+- encoding & embedding is almost the same
+- face encoding will work for all new pictures
+- word embedding learns fixed embedding for all the words in the vocabulary
+
+#### 15 -  Properties of word embeddings
+
+- man -> Woman as King -> ?
+- can an algorithm figure this out ?
+- $e_{man}, e_{woman}, e_{king}, e_{queen}$
+  - $e_{man} - e_{woman} \approx \begin{bmatrix} -2 \\ 0 \\ 0 \\ 0 \end{bmatrix} $
+  - $e_{king} - e_{queen} \approx \begin{bmatrix} -2 \\ 0 \\ 0 \\ 0 \end{bmatrix} $
+- main difference is gender
+- $e_{man} - e_{woman} \approx e_{king} - e_?$ 
+- accuracy between 30-75%
+- idea by Mikolov, 2013
+- for showing parallel relationships:
+  - t-SNE: Maps 300D -> 2D, non linear mapping
+
+Cosine similiarity
+$$ sim(e_w, e_{king} - e_{man} + e_{woman}) $$
+$$ sim(u,v) = \frac{u^Tv}{|| u||_2 ||v||} $$
+
+#### 16 - Embedding matrix
+
+- use 10k dimensional vocabulary
+- learn embedding Matrix $E$ with D:(300, 10000)
+- One Hot Vector, e.g. $O_{6257}$ we get:
+  - $E (300,10k) * O_{6267} (10K, 1) = D:(300,1) = e_{6257}$
+  - will select the column corresponding to the word
+  - not efficient to look up an embedding, better to use specialized function
+
+### Learning Word Embeddings: Word2vec & GloVe
+
+#### 17 - Learning word embeddings
+
+- researcher started to use very complex algorithm
+- but they found very simple algorithm, which work just great for lots of data
+
+Neural language model:
+- I want a glass of orange _________
+- 4343, 9665, 1, 3852, 6163, 6257
+- for each word repeat:
+  - $o_{4343} \longrightarrow E \Longrightarrow e_{4343}$
+  - feed all of them to a hidden layer
+  - apply softmax afterwards
+- Parameters of model: Matrix $E$ ,w[1] & b[1], w[2] & b[2]
+
+other context/target pairs:
+I want a glass of orange juice to go along with my cereal
+- target: juice
+- context: last 4 words, can be extended to 4 words on left & right
+- predict word in the middle
+- alternatives: last 1 word, nearby 1 word
+
+#### 18 - Word2Vec
+
+skip-grams:
+- I want a glass of orange juice to go along with my cereal.
+- Context -> Target
+  - randomly pick one word for context
+  - pick target word (nearby, +-5 window) 
+- supervised learning problem: just used for word embeddings
+
+model: 
+- vocab size = 10k
+- Map: Context c ("orange") $\longrightarrow$ Target t ("juice")
+- $O_c \longrightarrow E \longrightarrow e_c \longrightarrow o (softmax) \longrightarrow \hat y$
+
+problems with softmax classification:
+- compute cost (sum of vocabulary size)
+- solution: hierarchical softmax (common words on top of tree, rare words buried)
+
+how to sample the context c ?
+- randomly sample 
+- common words should not dominate the model, use them in balance
+
+#### 19 - Negative Sampling
+
+- by Mikolov, 2013: Distributed representation of words and phrases and their compositionality
+- **context + word -> Target 1/0**
+  - orange juice ->  1
+  - orange king ->  0
+  - orange book -> 0 
+  - orange the -> 0
+  - orange of -> 0 
+- pick context word, pick target word with label 1
+- for k times take same context word, take random words of dictionary and label all 0
+- k is recommended to be 5-20 (small datasets), or 2-5 (larger datasets)
+
+Model:
+- $P(y=1| c,t) = \sigma ( \Theta_t^T e_c )$
+- for 1 positive example you have k negative examples
+- imagine 10000 binary classifier for all words in vocab
+- not softmaxing with 10000 -> 10000 binary classifier
+- for each iteariton train k+1 classifiers, not all
+
+selecting negative examples:
+- samping words by empirical frequency $P(w_i)$ - get lots of the, of, and ..
+- author reported best: $P(w_i) = \frac{f(w_i)^{\frac{3}{4}}}{  \sum_{j=1}^{10000} f(w_j)^{\frac{3}{4}}}$
+
+#### 20 - GloVe word vectors
+
+- by Pennington, 2014 : GloVe - Gloval vectors for word representation
+- $x_{ij}$ #times i appears in context of j (i = target t, j = context c)
+
+model: 
+- minmize $\sum_{i=1}^{10000} \sum_{j=1}^{10000} f(X_{ij}) ( \Theta_i^T e_j + b_i + b_j' - \log X_{ij})$
+  - weighting term $f(X_{ij})$ so 0 log 0 = 0
+  - common words get less weight, and uncommon not to much weight
+  - $b_i$: target t
+  - $b_j$: target c
+
+### Applications using Word Embeddings
+
+#### 21 - Sentiment Classification
+
+- looking at text: like or dislike what he talks about
+- the dessert is excellent: 4/5 stars
+  - sum or average all inputs -> softmax -> $\hat{y}$
+  - average would work for all text sizes (5 or 50 words)
+  - ignores word order (completely lacking in good taste, good service and good ambience -> would be rated like 4/5, because lots of good)
+
+rnn for sentiment classification:
+- take one hot vecotr
+- multiply by embedding matrix E 
+- feed these to RNN  
+
+#### 22 - Debiasing word embeddings
+
+- by Bolukbasi, 2016: Man is to computer pragrammer as woman is to *homemaker*? 
+- Father:Doctor as Mother:Nurse
+- word embeddings can reflect gender, age, sexual orientation and other biases of the text used to train the model
+
+addressing bias in word embeddings
+1. Identify bias direction : $e_{he} - e_{she}, \dots$ and average them
+2. Neutralize: for every word that is not definitional, project to get rid of bias (not for grandfather, but do it for doctor)
+3. Equalize pairs like : girl/boy, grandmother/grandfather
