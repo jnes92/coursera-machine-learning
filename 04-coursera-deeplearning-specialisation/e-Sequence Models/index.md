@@ -421,3 +421,192 @@ addressing bias in word embeddings
 1. Identify bias direction : $e_{he} - e_{she}, \dots$ and average them
 2. Neutralize: for every word that is not definitional, project to get rid of bias (not for grandfather, but do it for doctor)
 3. Equalize pairs like : girl/boy, grandmother/grandfather
+
+## Week 3 - Sequence models & Attention mechanism
+
+### Various sequence to sequence architectures
+
+#### 23 - VortragBasic Models
+
+sequence to sequence model:
+- by sutskever, 2014: Sequence to sequence learning with NN
+- by Cho 2014: Learning phrase representations
+- translate french sequence to english sequence
+- given enough pairs of french, english sentences -> it works decently well
+- network: Encoder Network -> Decoder Network (for translation)
+
+image captioning:
+- input image, output caption, e.g. *a cat sitting on a chair*
+- learn features from input image (encoding), remove softmax layer to get vector representing the cat -> takes place of encoding network
+- feed this to rnn to generate caption
+
+
+#### 24 - Picking the most likely sentence
+
+- language model network
+  - P(y)
+- machine translation: 
+  - encoding network
+  - decoding network: *language model* from before
+  - P(y | x ) : *conditional language model*
+
+most likely translation:
+
+- dont sample at random, find a sentence maximizing propability
+- most common is beamSearch
+- why not greedy search ?
+
+greedy search
+
+- e.g. 2 translations
+  - Jane is visiting Africa in September (better translation)
+  - Jane is going to be visiting Africa in September
+- because jane is going is more common than visiting, it would choose going.
+
+#### 25 - Beam Search
+
+1. whats the probabilty of the first word, given x (french)
+   - beam search supports multiple candidates for the words
+   - $B=3$ beam width
+   - select 3 highest words
+2. uses all the beam to evaluate the network fragments
+   - $P (y^{<1>}, y^{<2>} | x) = P(y^{<1>} | x) * P(y^{<2>} | x,y^{<1>})$
+   - for 2nd step you are calculating *beam width* * vocabulary size and pick top *beam width (3)* again
+3. repeat :) 
+
+- B=1 $\Longrightarrow$ greedy search
+
+#### 26 - Refinements to Beam Search
+
+Length normalization:
+
+- multiplying numbers smaller than 1 can get too small to get stored accurately
+- instead of maximizing product: $argmax \prod P(y^{<t>} | x,y^{<1>}, \dots , y^{<t-1>}$ 
+- we maximize the log of the Product: $argmax \prod \log P(y^{<t>} | x,y^{<1>}, \dots , y^{<t-1>}$
+- if we do another change the algorithm improves more:
+  - for very long sentences the prob will get smaller in the end
+  - undesireable: prefers short translation / output
+  - normalize by number of words in translation: $\frac{1}{Ty^\alpha} \prod \log P(y^{<t>} | x,y^{<1>}, \dots , y^{<t-1>}$
+  - alpha is hyperparameter for "normalization", between 0-1
+
+discussion:
+- Beam width B: 
+  - larger -> better sentence, but higher computation (slower)
+  - smaller -> worse result, but faster
+  - 10 is common for production - maybe 100
+  - for papers it could be 1000 or 3000 to get the best results possible
+  - gains are higher from 1-3-10 : 1000-3000
+  - Beam search is faster than Breadth first search (BFS) or Depth First Search (DFS), but its not guaranteed to find maximum
+
+#### 27 - Error analysis in beam search
+
+- Translation
+  - y* human: Jane visits Africa in september 
+  - $\hat{y}$ algorithm: Jane visited Africa last September
+- RNN computes P(y*|x) and P($\hat y$ | x), which one is bigger?
+- Case 1 :  P(y*|x) > P($\hat y$ | x)
+  - Beam search is at fault
+- Case 2:  P(y*|x) $\leq$ P($\hat y$ | x)
+  - RNN predicted $\hat y$ is the better one
+  - RNN model is at fault
+
+error analysis process:
+
+- find mistake root is by rnn or beam search 
+- get higher faction of errors and improve this one
+
+#### 28 - Bleu Score (optional)
+
+- what to do if you got multiple equally good translations?
+- by papineni, 2002: method for automatic evaluation of machine translation
+- e.g. 
+  - ref 1: the cat is on the mat
+  - ref 2: there is a cat on the mat
+- Bleu score measures how good that translation is
+  - Bleu: bilingual evaluation understudy
+  - mt output: the the the the the the the (7x the)
+- Precision: $\frac{7}{7}$, modified precision: credit only up to maximum time of appearance: ref1($\frac{2}{7}$)
+- for bleu score you want to see pairs of words -> on bigrams
+  - mt output: the cat the cat on the mat (empty)
+
+bigrams | count | count (clip)
+- | - | - 
+the cat | 2 | 1
+cat the | 1 | 0
+cat on | 1 | 1 
+on the |  1 | 1
+the mat | 1 | 1
+
+- modified precision : $\frac{4}{6}$
+- more generalized 1 for unigram: $P_1 = \frac{\sum_{unigrams \in \hat{y} } Count clip (unigram) }{ \sum_{unigrams \in \hat{y} } Count (unigram)  }$ 
+- n-gram version:$P_n$
+- $p_n$ = Bleu score on n-grams only
+- Combined Bleu score : $BP* \exp ( \frac{1}{4} \sum_{n=1}^4 p_n)$
+- with BP: brewity penalty
+
+#### 29 - Attention Model Intuition
+
+- humans translate sentences part by part, because its hard to memorize real long sentences
+- for encoding - decoding architecture is working good for short sentences (up to 30/40 words)
+
+attention model intuiton:
+
+- use 2 rnns, for hidden architecture use s, instead of a for activations
+- what parts you need to look for predicting the first word? first, maybe the first few words
+- attention words weight: $\alpha^{<1,1>}$, $\alpha^{<1,2>}$
+- how much attention we need to weight the single words for the word on index 1, ... , n
+
+second step:
+
+- new set of attention weights for the second word in the sequence
+- context c should be a vector with all the weights
+
+#### 30 - Attention Model
+
+model:
+- t' for input sentence (french)
+- for the s architecture:
+  - input c, output y
+- context **c** is dependent of attention weights $\alpha$
+  -  weighted sum of features
+  -  $\sum_{t'} \alpha^{<1,t'>} = 1$
+  -  $c^{<i>} = \sum_{t'} \alpha^{<1,t'>} a^{<t'>}$
+  -  $\alpha^{<t,t'>}$: amount of attention y^t should pay to a^t
+
+computing attention  $\alpha^{<t,t'>}$
+
+-  $\alpha^{<t,t'>} = \frac{\exp(e^{<t,t'>})}{\sum_{t'=1}^{T_x} \exp{e^{<t,t'>}} }$
+-  very small neural network to get $e^{<t,t'>}$
+   -  with input $a^{<t'>}, s^{<t-1>}$
+   -  mostly 1 hidden layer
+- takes quadratic time for computation: $T_x * T_y$
+- for machine translation all sentences are rather short, so its acceptable
+
+### Speech recognition - Audio data
+
+#### 31 - Speech recognition
+
+- given audio clip x -> find transcript y
+- microphone measure air pressure, plot air pressure vs time
+- common preprocessing: generate spectogram time vs frequency, with colors showing energy (volume)
+- you can use attention model for speech recognition, too
+- or use CTC cost (Connectionist temporal classification)
+
+#### 32 - Trigger Word Detection
+
+- examples:
+  - Amazon echo: Alexa
+  - Apple Siri: Hey Siri
+  - Google Home: Okay, google
+- there is no best algorithm for trigger word detection (evolving currently)
+- first example
+  - set all words until the trigger word to be ignored (target label 0)
+  - label with 1 for trigger word
+  - inbalanced training set: lots of 0, rarely 1
+  - hack: output few 1 before reverting back to 0 after trigger word
+
+### Conclusion
+
+#### 33 - Conclusion and thank you
+
+- watch the video yourself :) 
