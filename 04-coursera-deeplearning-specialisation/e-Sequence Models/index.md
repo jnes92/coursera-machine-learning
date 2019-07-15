@@ -610,3 +610,6 @@ computing attention  $\alpha^{<t,t'>}$
 #### 33 - Conclusion and thank you
 
 - watch the video yourself :) 
+
+
+Course ended: 15.7.19
