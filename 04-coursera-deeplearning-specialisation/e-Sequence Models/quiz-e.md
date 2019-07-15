@@ -23,3 +23,16 @@
 8. 500 dims, adam optimizer
 9. random init, xij number of times appears, weighting function f0 = 0
 10. m1 >> m2
+
+# Week 3 - Sequence models & Attention mechanism
+
+1. false
+2. slower, more memory, better solution
+3. true
+4. no, should be rnn attributed
+5. true
+6. t' = 1, y^t
+7. true
+8. large input sentence
+9. cookbook
+10. features of audio
