@@ -1,6 +1,9 @@
+Overall:
+18.05.19 - 15.7.19
+
 # Week 1: Total 45min (18.05.19)
 
-- 18.5.: Lesson 1 - 
+- 18.5.:
 
 ## 01 - Welcome
 
